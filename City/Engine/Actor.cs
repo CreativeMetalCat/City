@@ -84,7 +84,7 @@ namespace City.Engine
 
         }
 
-        public virtual void Draw(icrosoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
+        public virtual void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
         {
 
         }
