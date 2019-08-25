@@ -12,6 +12,8 @@ namespace City
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D placeholder;
+
+        Engine.Actor actor;
         
         public GameHandler()
         {
@@ -30,6 +32,11 @@ namespace City
             // TODO: Add your initialization logic here
 
             base.Initialize();
+
+            actor = new Engine.Actor(this, new Vector3(0, 10, 10), new System.TimeSpan(0, 0, 0));
+            actor.Components.Add(new Engine.Components.ImageDisplayComponent(this, actor, "Textures/picture"));
+            actor.Components.Add(new Engine.Components.ImageDisplayComponent(this, actor, "Textures/grassy_bricks"));
+            actor.Init();
         }
 
         /// <summary>
@@ -81,7 +88,7 @@ namespace City
             // TODO: Add your drawing code here
 
             spriteBatch.Begin();
-            spriteBatch.Draw(placeholder, new Vector2(0, 0));
+            actor.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);

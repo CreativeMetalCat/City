@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Engine\Actor.cs" />
     <Compile Include="Engine\Component.cs" />
+    <Compile Include="Engine\ImageDisplayComponent.cs" />
     <Compile Include="GameHandler.cs" />
     <Compile Include="Engine\Object.cs" />
     <Compile Include="Program.cs" />

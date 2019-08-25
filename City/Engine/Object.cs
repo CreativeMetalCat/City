@@ -11,9 +11,12 @@ namespace City.Engine
     ///<summary>Base of all bases of the engine</summary>
     public class Object : IDisposable
     {
-        string Name;
+        string name;
 
         GameHandler game;
+
+        public GameHandler Game { get => game; set => game = value; }
+        public string Name { get => name; set => name = value; }
 
         public Object(GameHandler game, string Name)
         {
@@ -23,7 +26,7 @@ namespace City.Engine
         public Object(GameHandler game)
         {
             this.game = game;
-            Name = "nonameobject";
+            name = "nonameobject";
         }
 
         public void Dispose()
@@ -36,6 +39,9 @@ namespace City.Engine
 
         }
 
+        /// <summary>
+        /// Happens during loadContent, but can be called outside
+        /// </summary>
         public virtual void Init()
         {
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using City.Engine.Components;
 
 namespace City.Engine
 {
@@ -51,6 +52,9 @@ namespace City.Engine
 
         public virtual bool IsValid() { return PendingKill; }
 
+        /// <summary>
+        /// Happens during loadContent, but can be called outside
+        /// </summary>
         public override void Init()
         {
             foreach (var comp in components)
@@ -86,7 +90,13 @@ namespace City.Engine
 
         public virtual void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
         {
-
+            foreach(var comp in components)
+            {
+                if(comp is Components.DrawableComponent)
+                {
+                    (comp as Components.DrawableComponent).Draw(spriteBatch);
+                }
+            }
         }
 
         public virtual void Destroy()
