@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using City.Engine.Components;
 using Microsoft.Xna.Framework;
-using City.Engine.Components;
+using System.Collections.Generic;
 
 namespace City.Engine
 {
@@ -12,11 +8,11 @@ namespace City.Engine
     public class Actor : Object
     {
 
-        Microsoft.Xna.Framework.Vector3 location;
+        public Microsoft.Xna.Framework.Vector3 location;
 
-        TimeSpan lifeTime;
+        double lifeTime;
 
-        TimeSpan livedTime;
+        double livedTime;
 
         bool pendingKill;
 
@@ -26,9 +22,9 @@ namespace City.Engine
 
         #region Properties
         public bool PendingKill { get => pendingKill; set => pendingKill = value; }
-        public TimeSpan LivedTime { get => livedTime; set => livedTime = value; }
-        public TimeSpan LifeTime { get => lifeTime; set => lifeTime = value; }
-        public Vector3 Location { get => location; set => location = value; }
+        public double LivedTime { get => livedTime; set => livedTime = value; }
+        public double LifeTime { get => lifeTime; set => lifeTime = value; }
+
         internal List<Actor> Children { get => children; set => children = value; }
         public List<Component> Components { get => components; set => components = value; }
 
@@ -37,14 +33,14 @@ namespace City.Engine
         #endregion
 
         ///<param name="lifeTime">lifetime=0 for infinite</param>
-        public Actor(GameHandler game, Vector3 location, TimeSpan lifeTime) : base(game)
+        public Actor(GameHandler game, Vector3 location, double lifeTime) : base(game)
         {
             this.location = location;
             this.lifeTime = lifeTime;
         }
 
         ///<param name="lifeTime">lifetime=0 for infinite. It uses seconds</param>
-        public Actor(GameHandler game, string Name, Vector3 location, TimeSpan lifeTime) : base(game, Name)
+        public Actor(GameHandler game, string Name, Vector3 location, double lifeTime) : base(game, Name)
         {
             this.location = location;
             this.lifeTime = lifeTime;
@@ -63,23 +59,23 @@ namespace City.Engine
             }
         }
 
-        public override void HandleInput(Microsoft.Xna.Framework.Input.Keys key)
+        public override void HandleInput(Microsoft.Xna.Framework.Input.Keys[] keys)
         {
             foreach (var comp in components)
             {
-                comp.HandleInput(key);
+                comp.HandleInput(keys);
             }
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
         {
-            foreach(var comp in components)
+            foreach (var comp in components)
             {
                 comp.Update(gameTime);
             }
-            if (lifeTime.Seconds != 0.0f)
+            if (lifeTime != 0.0f)
             {
-                livedTime += gameTime.ElapsedGameTime;
+                livedTime += gameTime.ElapsedGameTime.TotalSeconds;
                 if (livedTime == lifeTime)
                 {
                     this.Destroy();
@@ -90,9 +86,9 @@ namespace City.Engine
 
         public virtual void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
         {
-            foreach(var comp in components)
+            foreach (var comp in components)
             {
-                if(comp is Components.DrawableComponent)
+                if (comp is Components.DrawableComponent)
                 {
                     (comp as Components.DrawableComponent).Draw(spriteBatch);
                 }

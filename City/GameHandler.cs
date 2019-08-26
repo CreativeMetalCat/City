@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using City.Engine;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace City
 {
@@ -9,12 +11,21 @@ namespace City
     /// </summary>
     public class GameHandler : Game
     {
-        GraphicsDeviceManager graphics;
+        readonly GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D placeholder;
+        readonly List<Actor> actors = new List<Actor>();
 
-        Engine.Actor actor;
-        
+
+        Actor GetActorByName(string name)
+        {
+            foreach (var actor in actors)
+            {
+                if (actor.Name == name) { return actor; }
+            }
+            return null;
+        }
+
         public GameHandler()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -33,10 +44,11 @@ namespace City
 
             base.Initialize();
 
-            actor = new Engine.Actor(this, new Vector3(0, 10, 10), new System.TimeSpan(0, 0, 0));
-            actor.Components.Add(new Engine.Components.ImageDisplayComponent(this, actor, "Textures/picture"));
-            actor.Components.Add(new Engine.Components.ImageDisplayComponent(this, actor, "Textures/grassy_bricks"));
-            actor.Init();
+            actors.Add(new Engine.Actor(this, "mousedisplay", new Vector3(0, 0, 0), 0.0f));
+            GetActorByName("mousedisplay").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("mousedisplay"), "Textures/grassy_bricks"));
+            //GetActorByName("actor1").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("actor1")));
+            GetActorByName("mousedisplay").Components.Add(new Engine.Components.MouseFollowComponent(this, GetActorByName("mousedisplay")));
+            GetActorByName("mousedisplay").Init();
         }
 
         /// <summary>
@@ -75,6 +87,12 @@ namespace City
             // TODO: Add your update logic here
 
             base.Update(gameTime);
+
+            foreach (var actor in actors)
+            {
+                actor.HandleInput(Keyboard.GetState().GetPressedKeys());
+                actor.Update(gameTime);
+            }
         }
 
         /// <summary>
@@ -88,7 +106,11 @@ namespace City
             // TODO: Add your drawing code here
 
             spriteBatch.Begin();
-            actor.Draw(spriteBatch);
+            foreach (var actor in actors)
+            {
+                actor.Draw(spriteBatch);
+            }
+
             spriteBatch.End();
 
             base.Draw(gameTime);

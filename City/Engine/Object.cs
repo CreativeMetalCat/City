@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
 
 namespace City.Engine
 {
@@ -12,6 +7,7 @@ namespace City.Engine
     public class Object : IDisposable
     {
         string name;
+        readonly string DisplayName;
 
         GameHandler game;
 
@@ -21,6 +17,7 @@ namespace City.Engine
         public Object(GameHandler game, string Name)
         {
             this.game = game;
+            this.name = Name;
         }
 
         public Object(GameHandler game)
@@ -34,7 +31,7 @@ namespace City.Engine
             throw new NotImplementedException();
         }
 
-        public virtual void HandleInput(Microsoft.Xna.Framework.Input.Keys key)
+        public virtual void HandleInput(Microsoft.Xna.Framework.Input.Keys[] keys)
         {
 
         }
@@ -54,5 +51,5 @@ namespace City.Engine
 
 
     }
-    
+
 }

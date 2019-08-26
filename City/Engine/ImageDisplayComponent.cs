@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
 
 namespace City.Engine.Components
 {
@@ -37,9 +32,9 @@ namespace City.Engine.Components
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
-            if (spriteBatch != null && !this.texture.IsDisposed)
+            if (spriteBatch != null && !this.texture.IsDisposed && Visible)
             {
-                spriteBatch.Draw(texture, new Vector2(this.location.X + this.owner.Location.X, this.location.Y + this.owner.Location.Y));
+                spriteBatch.Draw(texture, new Vector2(this.location.X + this.owner.location.X, this.location.Y + this.owner.location.Y));
             }
         }
 
