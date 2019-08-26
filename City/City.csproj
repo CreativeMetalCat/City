@@ -48,6 +48,7 @@
     <Compile Include="Engine\ImageDisplayComponent.cs" />
     <Compile Include="GameHandler.cs" />
     <Compile Include="Engine\Object.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

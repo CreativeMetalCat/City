@@ -10,15 +10,21 @@ namespace City.Engine
 
         public Microsoft.Xna.Framework.Vector3 location;
 
-        double lifeTime;
+        protected double lifeTime;
 
-        double livedTime;
+        protected double livedTime;
 
-        bool pendingKill;
+        protected bool pendingKill;
 
-        List<Actor> children = new List<Actor>();
+        protected List<Actor> children = new List<Actor>();
 
-        List<Component> components = new List<Component>();
+        protected List<Component> components = new List<Component>();
+
+        /// <summary>
+        /// Id that used if there mulitiple actors with the same name
+        /// Used to give proper name
+        /// </summary>
+        public int Id = 0;
 
         #region Properties
         public bool PendingKill { get => pendingKill; set => pendingKill = value; }
@@ -32,6 +38,10 @@ namespace City.Engine
 
         #endregion
 
+        public delegate void OnMousePressedDelegate();
+
+        public event OnMousePressedDelegate OnMousePressed;
+
         ///<param name="lifeTime">lifetime=0 for infinite</param>
         public Actor(GameHandler game, Vector3 location, double lifeTime) : base(game)
         {
@@ -40,6 +50,7 @@ namespace City.Engine
         }
 
         ///<param name="lifeTime">lifetime=0 for infinite. It uses seconds</param>
+        ///<param name="Name">Id at the name is based on Id of actor not on the part of the string</param>
         public Actor(GameHandler game, string Name, Vector3 location, double lifeTime) : base(game, Name)
         {
             this.location = location;

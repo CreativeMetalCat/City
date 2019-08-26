@@ -14,16 +14,91 @@ namespace City
         readonly GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D placeholder;
-        readonly List<Actor> actors = new List<Actor>();
+        /// <summary>
+        /// Containes all actors of scene. You can get specific by using GetActorByName or add by using AddActor(name)
+        /// Needs to be accesseble from actor class itself
+        /// </summary>
+        public readonly List<Actor> actors = new List<Actor>();
 
 
-        Actor GetActorByName(string name)
+        Actor GetActorByName(string name, bool useId = true)
         {
+
+
             foreach (var actor in actors)
             {
-                if (actor.Name == name) { return actor; }
+                if (useId && actor.Id != 0)
+                {
+                    if ((actor.Name + actor.Id.ToString()) == name) { return actor; }
+                }
+                else
+                {
+                    if (actor.Name == name) { return actor; }
+                }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Adds new actor.
+        /// If there is already actor with this name increments last number of name to avoid having same names
+        /// </summary>
+        /// <param name="actor"> Actor to add</param>
+        void AddActor(Actor actor)
+        {
+
+            int id = 0;
+            if (actors.Count != 0)
+            {
+                foreach (var item in actors)
+                {
+                    if (item.Name == actor.Name)
+                    {
+                        id++;
+                    }
+                }
+                if (id != 0)
+                {
+                    actor.Id = id;
+                    actors.Add(actor);
+                }
+                else
+                {
+                    actors.Add(actor);
+                }
+            }
+            else
+            {
+                actors.Add(actor);
+            }
+        }
+
+        /// <summary>
+        /// Adds new actor.
+        /// If there is already actor with this name returns false
+        /// </summary>
+        /// <param name="actor"> Actor to add</param>
+        bool AddActorUniqueName(Actor actor)
+        {
+            if (actors.Count != 0)
+            {
+                foreach (var item in actors)
+                {
+                    if (item.Name == actor.Name)
+                    {
+                        return false;
+                    }
+                }
+
+                actors.Add(actor);
+                return true;
+
+            }
+            else
+            {
+                actors.Add(actor);
+                return true;
+            }
         }
 
         public GameHandler()
@@ -44,11 +119,17 @@ namespace City
 
             base.Initialize();
 
-            actors.Add(new Engine.Actor(this, "mousedisplay", new Vector3(0, 0, 0), 0.0f));
+            AddActor(new Engine.Actor(this, "mousedisplay", new Vector3(0, 0, 0), 0.0f));
             GetActorByName("mousedisplay").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("mousedisplay"), "Textures/grassy_bricks"));
             //GetActorByName("actor1").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("actor1")));
             GetActorByName("mousedisplay").Components.Add(new Engine.Components.MouseFollowComponent(this, GetActorByName("mousedisplay")));
             GetActorByName("mousedisplay").Init();
+
+            AddActor(new Engine.Actor(this, "mousedisplay", new Vector3(0, 0, 0), 0.0f));
+            GetActorByName("mousedisplay1").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("mousedisplay1"), "Textures/grassy_bricks"));
+            //GetActorByName("actor1").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("actor1")));
+            GetActorByName("mousedisplay").Components.Add(new Engine.Components.MouseFollowComponent(this, GetActorByName("mousedisplay")));
+            GetActorByName("mousedisplay1").Init();
         }
 
         /// <summary>
