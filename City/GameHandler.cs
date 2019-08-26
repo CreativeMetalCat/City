@@ -21,7 +21,7 @@ namespace City
         public readonly List<Actor> actors = new List<Actor>();
 
 
-        Actor GetActorByName(string name, bool useId = true)
+        public Actor GetActorByName(string name, bool useId = true)
         {
 
 
@@ -44,7 +44,8 @@ namespace City
         /// If there is already actor with this name increments last number of name to avoid having same names
         /// </summary>
         /// <param name="actor"> Actor to add</param>
-        void AddActor(Actor actor)
+        /// <returns>Actor.Id or 0 if no other actors use this name</returns>
+        public int AddActor(Actor actor)
         {
 
             int id = 0;
@@ -61,15 +62,18 @@ namespace City
                 {
                     actor.Id = id;
                     actors.Add(actor);
+                    return id;
                 }
                 else
                 {
                     actors.Add(actor);
+                    return 0;
                 }
             }
             else
             {
                 actors.Add(actor);
+                return 0;
             }
         }
 
@@ -78,7 +82,7 @@ namespace City
         /// If there is already actor with this name returns false
         /// </summary>
         /// <param name="actor"> Actor to add</param>
-        bool AddActorUniqueName(Actor actor)
+        public bool AddActorUniqueName(Actor actor)
         {
             if (actors.Count != 0)
             {
@@ -125,11 +129,9 @@ namespace City
             GetActorByName("mousedisplay").Components.Add(new Engine.Components.MouseFollowComponent(this, GetActorByName("mousedisplay")));
             GetActorByName("mousedisplay").Init();
 
-            AddActor(new Engine.Actor(this, "mousedisplay", new Vector3(0, 0, 0), 0.0f));
-            GetActorByName("mousedisplay1").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("mousedisplay1"), "Textures/grassy_bricks"));
-            //GetActorByName("actor1").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("actor1")));
-            GetActorByName("mousedisplay").Components.Add(new Engine.Components.MouseFollowComponent(this, GetActorByName("mousedisplay")));
-            GetActorByName("mousedisplay1").Init();
+            AddActor(new Player(this, "player", new Vector3(0, 0, 0), 0.0f));
+
+            GetActorByName("player").Init();
         }
 
         /// <summary>
@@ -168,12 +170,20 @@ namespace City
             // TODO: Add your update logic here
 
             base.Update(gameTime);
-
-            foreach (var actor in actors)
+            for (int i = 0; i < actors.Count; i++)
             {
-                actor.HandleInput(Keyboard.GetState().GetPressedKeys());
-                actor.Update(gameTime);
+                if (!actors[i].IsValid())
+                {
+                    actors.RemoveAt(i);
+                }
             }
+            for (int i = 0; i < actors.Count; i++)
+            {
+                actors[i].HandleInput(Keyboard.GetState().GetPressedKeys());
+                actors[i].Update(gameTime);
+            }
+
+
         }
 
         /// <summary>

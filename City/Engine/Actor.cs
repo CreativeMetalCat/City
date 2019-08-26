@@ -14,7 +14,7 @@ namespace City.Engine
 
         protected double livedTime;
 
-        protected bool pendingKill;
+        protected bool pendingKill = false;
 
         protected List<Actor> children = new List<Actor>();
 
@@ -57,7 +57,7 @@ namespace City.Engine
             this.lifeTime = lifeTime;
         }
 
-        public virtual bool IsValid() { return PendingKill; }
+        public virtual bool IsValid() { return !PendingKill; }
 
         /// <summary>
         /// Happens during loadContent, but can be called outside
@@ -87,9 +87,9 @@ namespace City.Engine
             if (lifeTime != 0.0f)
             {
                 livedTime += gameTime.ElapsedGameTime.TotalSeconds;
-                if (livedTime == lifeTime)
+                if (livedTime >= lifeTime)
                 {
-                    this.Destroy();
+                    this.Dispose();
                 }
             }
 
@@ -111,6 +111,21 @@ namespace City.Engine
             PendingKill = true;
             Dispose();
         }
+
+        public override void Dispose()
+        {
+            PendingKill = true;
+            foreach (var item in components)
+            {
+                item.Dispose();
+            }
+            foreach(var child in Children)
+            {
+                child.Dispose();
+            }
+            System.GC.SuppressFinalize(this);
+        }
+
     }
 
 }

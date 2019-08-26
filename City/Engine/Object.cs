@@ -26,7 +26,7 @@ namespace City.Engine
             name = "nonameobject";
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             throw new NotImplementedException();
         }

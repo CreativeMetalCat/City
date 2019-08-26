@@ -37,6 +37,9 @@ namespace City.Engine.Components
                 spriteBatch.Draw(texture, new Vector2(this.location.X + this.owner.location.X, this.location.Y + this.owner.location.Y));
             }
         }
-
+        public override void Dispose()
+        {
+            //texture.Dispose();
+        }
     }
 }

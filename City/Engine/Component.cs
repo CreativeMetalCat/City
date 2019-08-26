@@ -40,6 +40,8 @@ namespace City.Engine.Components
         {
 
         }
+
+
     }
 
     public class BasicMovementComponent : Component
@@ -78,6 +80,11 @@ namespace City.Engine.Components
                 }
             }
         }
+
+        public override void Dispose()
+        {
+
+        }
     }
     /// <summary>
     /// Component that sets owner's position to the mouse's position
@@ -99,6 +106,10 @@ namespace City.Engine.Components
             {
                 owner.location = new Vector3(Microsoft.Xna.Framework.Input.Mouse.GetState().Position.X, Microsoft.Xna.Framework.Input.Mouse.GetState().Position.Y, 0);
             }
+        }
+        public override void Dispose()
+        {
+            
         }
     }
 
