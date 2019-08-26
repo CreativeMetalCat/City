@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Audio;
 
 namespace City
 {
@@ -14,6 +16,12 @@ namespace City
         readonly GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D placeholder;
+
+        SoundEffect beam;
+
+         Actor mouseDisplayActor;
+
+        public readonly Vector2 gridSize;
         /// <summary>
         /// Containes all actors of scene. You can get specific by using GetActorByName or add by using AddActor(name)
         /// Needs to be accesseble from actor class itself
@@ -109,6 +117,9 @@ namespace City
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            gridSize.X = 32;
+            gridSize.Y = 32;
         }
 
         /// <summary>
@@ -123,15 +134,19 @@ namespace City
 
             base.Initialize();
 
-            AddActor(new Engine.Actor(this, "mousedisplay", new Vector3(0, 0, 0), 0.0f));
-            GetActorByName("mousedisplay").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("mousedisplay"), "Textures/grassy_bricks"));
+           beam = Content.Load<SoundEffect>("Sounds/beams/beamstart5");
+
+            mouseDisplayActor = new Engine.Actor(this, "mousedisplay", new Vector3(0, 0, 0), 0.0f);
+            mouseDisplayActor.Components.Add(new Engine.Components.ImageDisplayComponent(this, mouseDisplayActor, "Textures/mouse/icons8-cursor-24"));
             //GetActorByName("actor1").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("actor1")));
-            GetActorByName("mousedisplay").Components.Add(new Engine.Components.MouseFollowComponent(this, GetActorByName("mousedisplay")));
-            GetActorByName("mousedisplay").Init();
+            mouseDisplayActor.Components.Add(new Engine.Components.MouseFollowComponent(this, mouseDisplayActor));
+            mouseDisplayActor.Init();
 
             AddActor(new Player(this, "player", new Vector3(0, 0, 0), 0.0f));
 
             GetActorByName("player").Init();
+
+            
         }
 
         /// <summary>
@@ -183,6 +198,8 @@ namespace City
                 actors[i].Update(gameTime);
             }
 
+            mouseDisplayActor.HandleInput(Keyboard.GetState().GetPressedKeys());
+            mouseDisplayActor.Update(gameTime);
 
         }
 
@@ -201,7 +218,7 @@ namespace City
             {
                 actor.Draw(spriteBatch);
             }
-
+            mouseDisplayActor.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);
