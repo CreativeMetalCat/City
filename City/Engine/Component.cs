@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace City.Engine.Components
@@ -41,6 +42,14 @@ namespace City.Engine.Components
 
         }
 
+        /// <summary>
+        /// This functions exist because models do not require spite batch
+        /// </summary>
+        public virtual void Draw(Matrix viewMatrix, Matrix projectionMatrix)
+        {
+
+        }
+
 
     }
 
@@ -78,6 +87,15 @@ namespace City.Engine.Components
                 {
                     owner.location.X += 1;
                 }
+                if (key == Keys.OemPlus)
+                {
+                    owner.location.Z += 1;
+                }
+
+                if (key == Keys.OemMinus)
+                {
+                    owner.location.Z -= 1;
+                }
             }
         }
 
@@ -109,8 +127,69 @@ namespace City.Engine.Components
         }
         public override void Dispose()
         {
-            
+
         }
     }
+
+
+    public class StaticMeshComponent : DrawableComponent
+    {
+        public Microsoft.Xna.Framework.Graphics.Model model;
+
+        public Matrix transofrmMatrix;
+
+        public Vector3 location;
+
+        public Vector3 rotation;
+
+        protected string modelName;
+
+        public StaticMeshComponent(GameHandler game, Actor owner, string modelName, Vector3 location, Vector3 rotation) : base(game, owner)
+        {
+            this.modelName = modelName;
+            this.location = location;
+            this.rotation = rotation;
+        }
+
+        public StaticMeshComponent(GameHandler game, string Name, Actor owner, string modelName, Vector3 location, Vector3 rotation) : base(game, Name, owner)
+        {
+            this.modelName = modelName;
+            this.location = location;
+            this.rotation = rotation;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+        }
+
+        public override void Init()
+        {
+            model = owner.Game.Content.Load<Model>(modelName);
+        }
+        public override void Draw(Matrix viewMatrix, Matrix projectionMatrix)
+        {
+            base.Draw(viewMatrix, projectionMatrix);
+
+            Vector3 pos = owner.location;
+            pos.Normalize();
+
+            foreach (ModelMesh mesh in model.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    //effect.EnableDefaultLighting();
+                    effect.AmbientLightColor = new Vector3(1f, 0, 0);
+                    effect.View = viewMatrix;
+                    effect.World = Matrix.CreateTranslation(location + pos) * Matrix.CreateRotationX(rotation.X + owner.rotation.X) * Matrix.CreateRotationY(rotation.Y + owner.rotation.Y) * Matrix.CreateRotationZ(rotation.Z + owner.rotation.Z);
+                    effect.Projection = projectionMatrix;
+                    effect.Alpha = 1;
+                }
+                mesh.Draw();
+            }
+        }
+
+    }
+
 
 }

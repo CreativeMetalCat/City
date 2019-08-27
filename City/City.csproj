@@ -43,6 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Engine\Actor.cs" />
+    <Compile Include="Engine\CameraComponent.cs" />
     <Compile Include="Engine\Component.cs" />
     <Compile Include="Engine\EngineExceptions.cs" />
     <Compile Include="Engine\ImageDisplayComponent.cs" />

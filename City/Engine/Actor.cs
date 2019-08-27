@@ -10,6 +10,8 @@ namespace City.Engine
 
         public Microsoft.Xna.Framework.Vector3 location;
 
+        public Microsoft.Xna.Framework.Vector3 rotation;
+
         protected double lifeTime;
 
         protected double livedTime;
@@ -43,7 +45,7 @@ namespace City.Engine
         public event OnMousePressedDelegate OnMousePressed;
 
         ///<param name="lifeTime">lifetime=0 for infinite</param>
-        public Actor(GameHandler game, Vector3 location, double lifeTime) : base(game)
+        public Actor(GameHandler game, Vector3 location, Vector3 rotation, double lifeTime) : base(game)
         {
             this.location = location;
             this.lifeTime = lifeTime;
@@ -51,7 +53,7 @@ namespace City.Engine
 
         ///<param name="lifeTime">lifetime=0 for infinite. It uses seconds</param>
         ///<param name="Name">Id at the name is based on Id of actor not on the part of the string</param>
-        public Actor(GameHandler game, string Name, Vector3 location, double lifeTime) : base(game, Name)
+        public Actor(GameHandler game, string Name, Vector3 location, Vector3 rotation, double lifeTime) : base(game, Name)
         {
             this.location = location;
             this.lifeTime = lifeTime;
@@ -102,6 +104,19 @@ namespace City.Engine
                 if (comp is Components.DrawableComponent)
                 {
                     (comp as Components.DrawableComponent).Draw(spriteBatch);
+
+                }
+            }
+        }
+
+        public virtual void Draw(Matrix viewMatrix, Matrix projectionMatrix)
+        {
+            foreach (var comp in components)
+            {
+                if (comp is Components.DrawableComponent)
+                {
+                    (comp as Components.DrawableComponent).Draw(viewMatrix, projectionMatrix);
+
                 }
             }
         }
@@ -119,7 +134,7 @@ namespace City.Engine
             {
                 item.Dispose();
             }
-            foreach(var child in Children)
+            foreach (var child in Children)
             {
                 child.Dispose();
             }

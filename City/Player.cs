@@ -9,11 +9,12 @@ namespace City
         SoundEffect spawnFailSound;
 
         bool leftMouseButtonPressed;
-        public Player(GameHandler game, Vector3 location, double lifeTime) : base(game, location, lifeTime)
+
+        public Player(GameHandler game, Vector3 location, Vector3 rotation, double lifeTime) : base(game, location, rotation, lifeTime)
         {
         }
 
-        public Player(GameHandler game, string Name, Vector3 location, double lifeTime) : base(game, Name, location, lifeTime)
+        public Player(GameHandler game, string Name, Vector3 location, Vector3 rotation, double lifeTime) : base(game, Name, location, rotation, lifeTime)
         {
         }
 
@@ -52,7 +53,7 @@ namespace City
                     }
                     if (canSpawn)
                     {//new Vector3(Microsoft.Xna.Framework.Input.Mouse.GetState().X, Microsoft.Xna.Framework.Input.Mouse.GetState().Y, 0)
-                        Game.AddActor(new Engine.Actor(Game, "actor", gridPos, 0.0f));
+                        Game.AddActor(new Engine.Actor(Game, "actor", gridPos, new Vector3(0, 0, 0), 0.0f));
                         Game.actors[Game.actors.Count - 1].Components.Add(new Engine.Components.ImageDisplayComponent(Game, Game.actors[Game.actors.Count - 1], "Textures/grassy_bricks"));
                         Game.actors[Game.actors.Count - 1].Init();
                     }

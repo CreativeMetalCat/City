@@ -1,10 +1,9 @@
 ﻿using City.Engine;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework.Media;
-using Microsoft.Xna.Framework.Audio;
 
 namespace City
 {
@@ -13,13 +12,20 @@ namespace City
     /// </summary>
     public class GameHandler : Game
     {
-        readonly GraphicsDeviceManager graphics;
+        public readonly GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D placeholder;
 
         SoundEffect beam;
 
-         Actor mouseDisplayActor;
+        Actor mouseDisplayActor;
+        Engine.Components.CameraComponent currentCamera;
+
+        //Camera
+        Vector3 camTarget;
+        Vector3 camPosition;
+
+        Model truck;
 
         public readonly Vector2 gridSize;
         /// <summary>
@@ -134,19 +140,31 @@ namespace City
 
             base.Initialize();
 
-           beam = Content.Load<SoundEffect>("Sounds/beams/beamstart5");
 
-            mouseDisplayActor = new Engine.Actor(this, "mousedisplay", new Vector3(0, 0, 0), 0.0f);
+            truck = Content.Load<Model>("Models/truck");
+
+            beam = Content.Load<SoundEffect>("Sounds/beams/beamstart5");
+
+
+            mouseDisplayActor = new Engine.Actor(this, "mousedisplay", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f);
+
             mouseDisplayActor.Components.Add(new Engine.Components.ImageDisplayComponent(this, mouseDisplayActor, "Textures/mouse/icons8-cursor-24"));
             //GetActorByName("actor1").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("actor1")));
+
+            mouseDisplayActor.Components.Add(new Engine.Components.StaticMeshComponent(this, mouseDisplayActor, "Models/truck", new Vector3(0, 0, 0), new Vector3(0, 0, 0)));
             mouseDisplayActor.Components.Add(new Engine.Components.MouseFollowComponent(this, mouseDisplayActor));
             mouseDisplayActor.Init();
 
-            AddActor(new Player(this, "player", new Vector3(0, 0, 0), 0.0f));
 
+
+            AddActor(new Player(this, "player", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f));
+
+            currentCamera = new Engine.Components.CameraComponent(this, GetActorByName("player"), new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, -5));
+            GetActorByName("player").Components.Add(currentCamera);
+            GetActorByName("player").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("player")));
             GetActorByName("player").Init();
 
-            
+
         }
 
         /// <summary>
@@ -198,8 +216,37 @@ namespace City
                 actors[i].Update(gameTime);
             }
 
+            if (Keyboard.GetState().IsKeyDown(Keys.OemPlus))
+            {
+                camPosition.Z += 0.1f;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.OemMinus))
+            {
+                camPosition.Z -= 0.1f;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                camPosition.X -= 0.1f;
+                camTarget.X -= 0.1f;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                camPosition.X += 0.1f;
+                camTarget.X += 0.1f;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                camPosition.Y -= 0.1f;
+                camTarget.Y -= 0.1f;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                camPosition.Y += 0.1f;
+                camTarget.Y += 0.1f;
+            }
             mouseDisplayActor.HandleInput(Keyboard.GetState().GetPressedKeys());
             mouseDisplayActor.Update(gameTime);
+
 
         }
 
@@ -209,16 +256,19 @@ namespace City
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
+            GraphicsDevice.Clear(Color.White);
             // TODO: Add your drawing code here
 
             spriteBatch.Begin();
+
+
             foreach (var actor in actors)
             {
+                actor.Draw(currentCamera.ViewMatrix, currentCamera.ProjectionMatrix);
                 actor.Draw(spriteBatch);
             }
             mouseDisplayActor.Draw(spriteBatch);
+            mouseDisplayActor.Draw(currentCamera.ViewMatrix, currentCamera.ProjectionMatrix);
             spriteBatch.End();
 
             base.Draw(gameTime);
