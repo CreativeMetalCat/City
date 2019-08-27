@@ -149,9 +149,6 @@ namespace City
             mouseDisplayActor = new Engine.Actor(this, "mousedisplay", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f);
 
             mouseDisplayActor.Components.Add(new Engine.Components.ImageDisplayComponent(this, mouseDisplayActor, "Textures/mouse/icons8-cursor-24"));
-            //GetActorByName("actor1").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("actor1")));
-
-          
             mouseDisplayActor.Components.Add(new Engine.Components.MouseFollowComponent(this, mouseDisplayActor));
             mouseDisplayActor.Init();
 
@@ -165,10 +162,6 @@ namespace City
           
             GetActorByName("player").Init();
 
-            AddActor(new Player(this, "truck", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f));
-            GetActorByName("truck").Components.Add(new Engine.Components.StaticMeshComponent(this, GetActorByName("truck"), "Models/truck", new Vector3(0, 0, 0), new Vector3(0, 0, 0)));
-
-            GetActorByName("truck").Init();
         }
 
         /// <summary>

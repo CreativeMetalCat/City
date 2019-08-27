@@ -44,6 +44,24 @@
 /processorParam:Quality=Best
 /build:Sounds/buttons/button2.wav
 
+#begin Sounds/ui/gameplay/build-large.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ui/gameplay/build-large.wav
+
+#begin Sounds/ui/gameplay/cannot-build.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ui/gameplay/cannot-build.wav
+
+#begin Sounds/ui/gameplay/wire-connect-pole.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ui/gameplay/wire-connect-pole.wav
+
 #begin Textures/grassy_bricks.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
