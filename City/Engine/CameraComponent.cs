@@ -49,7 +49,7 @@ namespace City.Engine.Components
             base.Update(gameTime);
 
 
-            viewMatrix = Matrix.CreateLookAt(camPosition + owner.location, camTarget,
+            viewMatrix = Matrix.CreateLookAt(camPosition + owner.location, Vector3.Forward,
                        Vector3.Up);
         }
     }

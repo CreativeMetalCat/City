@@ -42,6 +42,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Building.cs" />
     <Compile Include="Engine\Actor.cs" />
     <Compile Include="Engine\CameraComponent.cs" />
     <Compile Include="Engine\Component.cs" />

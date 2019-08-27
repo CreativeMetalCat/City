@@ -171,8 +171,8 @@ namespace City.Engine.Components
         {
             base.Draw(viewMatrix, projectionMatrix);
 
-            Vector3 pos = owner.location;
-            pos.Normalize();
+
+
 
             foreach (ModelMesh mesh in model.Meshes)
             {
@@ -181,7 +181,7 @@ namespace City.Engine.Components
                     //effect.EnableDefaultLighting();
                     effect.AmbientLightColor = new Vector3(1f, 0, 0);
                     effect.View = viewMatrix;
-                    effect.World = Matrix.CreateTranslation(location + pos) * Matrix.CreateRotationX(rotation.X + owner.rotation.X) * Matrix.CreateRotationY(rotation.Y + owner.rotation.Y) * Matrix.CreateRotationZ(rotation.Z + owner.rotation.Z);
+                    effect.World = Matrix.CreateTranslation(location - owner.location) * Matrix.CreateRotationX(rotation.X + owner.rotation.X) * Matrix.CreateRotationY(rotation.Y + owner.rotation.Y) * Matrix.CreateRotationZ(rotation.Z + owner.rotation.Z);
                     effect.Projection = projectionMatrix;
                     effect.Alpha = 1;
                 }
