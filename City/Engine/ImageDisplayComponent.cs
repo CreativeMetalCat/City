@@ -32,7 +32,7 @@ namespace City.Engine.Components
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
-            if (spriteBatch != null && !this.texture.IsDisposed && Visible)
+            if (spriteBatch != null && this.texture != null && !this.texture.IsDisposed && Visible)
             {
                 spriteBatch.Draw(texture, new Vector2(this.location.X + this.owner.location.X, this.location.Y + this.owner.location.Y));
             }

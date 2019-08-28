@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using NoiseTest;
 
 namespace City
 {
@@ -159,9 +160,62 @@ namespace City
             currentCamera = new Engine.Components.CameraComponent(this, GetActorByName("player"), new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, -5));
             GetActorByName("player").Components.Add(currentCamera);
             GetActorByName("player").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("player")));
-          
+
             GetActorByName("player").Init();
 
+            OpenSimplexNoise oSimplexNoise = new OpenSimplexNoise();
+            for (int x = 0; x < 50; x++)
+            {
+                for (int y = 0; y < 50; y++)
+                {
+                    double fNoise = oSimplexNoise.Evaluate(x, y);
+
+                    if (fNoise < -0.3)
+                    {
+                        int copyId = AddActor(new Actor(this, "water", new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
+                        if (copyId != 0)
+                        {
+                            GetActorByName("water" + copyId).Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("water" + copyId), "Textures/nature/water1"));
+                            GetActorByName("water" + copyId).Init();
+                        }
+                        else
+                        {
+                            GetActorByName("water").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("water"), "Textures/nature/water1"));
+                            GetActorByName("water").Init();
+                        }
+
+                    }
+                    else if (fNoise >= 0)
+                    {
+                        int copyId = AddActor(new Actor(this, "grass", new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
+                        if (copyId != 0)
+                        {
+                            GetActorByName("grass" + copyId).Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("grass" + copyId), "Textures/nature/grass1"));
+                            GetActorByName("grass" + copyId).Init();
+                        }
+                        else
+                        {
+                            GetActorByName("grass").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("grass"), "Textures/nature/grass1"));
+                            GetActorByName("grass").Init();
+                        }
+
+                    }
+                    else if (fNoise >= -0.3 && fNoise < 0)
+                    {
+                        int copyId = AddActor(new Actor(this, "sand", new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
+                        if (copyId != 0)
+                        {
+                            GetActorByName("sand" + copyId).Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("sand" + copyId), "Textures/nature/sand1"));
+                            GetActorByName("sand" + copyId).Init();
+                        }
+                        else
+                        {
+                            GetActorByName("sand").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("sand"), "Textures/nature/sand1"));
+                            GetActorByName("sand").Init();
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>

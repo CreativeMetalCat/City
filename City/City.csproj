@@ -50,6 +50,8 @@
     <Compile Include="Engine\ImageDisplayComponent.cs" />
     <Compile Include="GameHandler.cs" />
     <Compile Include="Engine\Object.cs" />
+    <Compile Include="GroundBaseActor.cs" />
+    <Compile Include="OpenSimplexNoise.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
