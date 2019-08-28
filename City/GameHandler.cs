@@ -172,7 +172,7 @@ namespace City
 
                     if (fNoise < -0.3)
                     {
-                        int copyId = AddActor(new Actor(this, "water", new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
+                        int copyId = AddActor(new GroundBaseActor(this, "water", false, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
                         if (copyId != 0)
                         {
                             GetActorByName("water" + copyId).Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("water" + copyId), "Textures/nature/water1"));
@@ -187,7 +187,7 @@ namespace City
                     }
                     else if (fNoise >= 0)
                     {
-                        int copyId = AddActor(new Actor(this, "grass", new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
+                        int copyId = AddActor(new GroundBaseActor(this, "grass", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
                         if (copyId != 0)
                         {
                             GetActorByName("grass" + copyId).Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("grass" + copyId), "Textures/nature/grass1"));
@@ -202,7 +202,7 @@ namespace City
                     }
                     else if (fNoise >= -0.3 && fNoise < 0)
                     {
-                        int copyId = AddActor(new Actor(this, "sand", new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
+                        int copyId = AddActor(new GroundBaseActor(this, "sand", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
                         if (copyId != 0)
                         {
                             GetActorByName("sand" + copyId).Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("sand" + copyId), "Textures/nature/sand1"));

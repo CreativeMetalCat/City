@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-
+using System.Linq;
 namespace City
 {
     class Player : Engine.Actor
@@ -57,10 +57,21 @@ namespace City
                     gridPos.Z = 0;
 
                     bool canSpawn = true;
-                    foreach (var actor in Game.actors)
+                    foreach (var actor in Game.actors.OfType<GroundBaseActor>())
                     {
-                        if (actor.location.X == gridPos.X && actor.location.Y == gridPos.Y) { canSpawn = false; break; }
+                        if (actor.location.X == gridPos.X && actor.location.Y == gridPos.Y)
+                        {
+                            if (!actor.canBeBuiltOn)
+                            {
+                                canSpawn &= false; break;
+                            }
+                        }
                     }
+                    foreach (var actor in Game.actors.OfType<Building>())
+                    {
+                        if (actor.location.X == gridPos.X && actor.location.Y == gridPos.Y) { canSpawn &= false; break; }
+                    }
+                    
                     if (canSpawn)
                     {//new Vector3(Microsoft.Xna.Framework.Input.Mouse.GetState().X, Microsoft.Xna.Framework.Input.Mouse.GetState().Y, 0)
                         Game.AddActor(new PowerConsumingBuilding(Game,"consumer", new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32,64, 64), new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32, 64, 64), new Vector3(gridPos.X, gridPos.Y, 0), new Vector3(0, 0, 0),6.0f));
@@ -94,9 +105,20 @@ namespace City
                     gridPos.Z = 0;
 
                     bool canSpawn = true;
-                    foreach (var actor in Game.actors)
+                    foreach (var actor in Game.actors.OfType<GroundBaseActor>())
                     {
-                        if (actor.location.X == gridPos.X && actor.location.Y == gridPos.Y) { canSpawn = false; break; }
+                      
+                        if (actor.location.X == gridPos.X && actor.location.Y == gridPos.Y)
+                        {
+                            if(!actor.canBeBuiltOn)
+                            {
+                                canSpawn &= false; break;
+                            }
+                        }
+                    }
+                    foreach (var actor in Game.actors.OfType<Building>())
+                    {
+                        if (actor.location.X == gridPos.X && actor.location.Y == gridPos.Y) { canSpawn &= false; break; }
                     }
                     if (canSpawn)
                     {
