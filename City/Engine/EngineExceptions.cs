@@ -21,4 +21,26 @@ namespace City.Engine.Exceptions
         {
         }
     }
+
+
+
+    [Serializable]
+    public class LoadFailException : Exception
+    {
+        public LoadFailException()
+        {
+        }
+
+        public LoadFailException(string message) : base(message)
+        {
+        }
+
+        public LoadFailException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        protected LoadFailException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+    }
 }

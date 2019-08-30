@@ -6,11 +6,13 @@ namespace City
     class Player : Engine.Actor
     {
 
-        SoundEffect spawnFailSound;
+        FMOD.Sound spawnFailSound;
+        FMOD.Sound spawnPowerSource;
+        FMOD.Sound spawnSuccess;
 
-        SoundEffect spawnPowerSource;
+        readonly AudioListener listener;
 
-        SoundEffect spawnSuccess;
+        public Engine.Components.CameraComponent playerCamera;
 
         bool leftMouseButtonPressed;
 
@@ -26,16 +28,23 @@ namespace City
 
         public override void Init()
         {
-            spawnFailSound = Game.Content.Load<SoundEffect>("Sounds/ui/gameplay/cannot-build");
+            System.Diagnostics.Debug.WriteLine(Game.GetContentDirectory() + "/Sounds/ui/gameplay/cannot-build.wav");
 
-            spawnPowerSource = Game.Content.Load<SoundEffect>("Sounds/ui/gameplay/wire-connect-pole");
+            spawnFailSound = Game.soundPlayer.LoadSound(Game.GetContentDirectory() + "/Sounds/ui/gameplay/cannot-build.wav", FMOD.MODE._2D);
 
-            spawnSuccess = Game.Content.Load<SoundEffect>("Sounds/ui/gameplay/build-large");
+            spawnPowerSource = Game.soundPlayer.LoadSound(Game.GetContentDirectory() + "/Sounds/ui/gameplay/wire-connect-pole.wav", FMOD.MODE._2D);
+
+            spawnSuccess = Game.soundPlayer.LoadSound(Game.GetContentDirectory() + "/Sounds/ui/gameplay/build-large.wav", FMOD.MODE._2D);
+
+            playerCamera = new Engine.Components.CameraComponent(Game, this, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+
+            components.Add(playerCamera);
 
             foreach (var comp in components)
             {
                 comp.Init();
             }
+
         }
 
         public override void HandleInput(Microsoft.Xna.Framework.Input.Keys[] keys)
@@ -43,6 +52,7 @@ namespace City
             foreach (var comp in components)
             {
                 comp.HandleInput(keys);
+
             }
             if (Microsoft.Xna.Framework.Input.Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
             {
@@ -71,18 +81,19 @@ namespace City
                     {
                         if (actor.location.X == gridPos.X && actor.location.Y == gridPos.Y) { canSpawn &= false; break; }
                     }
-                    
+
                     if (canSpawn)
                     {//new Vector3(Microsoft.Xna.Framework.Input.Mouse.GetState().X, Microsoft.Xna.Framework.Input.Mouse.GetState().Y, 0)
-                        Game.AddActor(new PowerConsumingBuilding(Game,"consumer", new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32,64, 64), new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32, 64, 64), new Vector3(gridPos.X, gridPos.Y, 0), new Vector3(0, 0, 0),6.0f));
+                        Game.AddActor(new PowerConsumingBuilding(Game, "consumer", new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32, 64, 64), new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32, 64, 64), new Vector3(gridPos.X, gridPos.Y, 0), new Vector3(0, 0, 0), 6.0f));
                         Game.actors[Game.actors.Count - 1].Components.Add(new Engine.Components.ImageDisplayComponent(Game, Game.actors[Game.actors.Count - 1], "Textures/grassy_bricks"));
                         Game.actors[Game.actors.Count - 1].Init();
 
-                        spawnSuccess.Play();
+
+                        Game.soundPlayer.PlaySound(spawnSuccess, null, false);
                     }
                     else
                     {
-                        spawnFailSound.Play();
+                        Game.soundPlayer.PlaySound(spawnFailSound, null, false);
                     }
 
                 }
@@ -107,10 +118,10 @@ namespace City
                     bool canSpawn = true;
                     foreach (var actor in Game.actors.OfType<GroundBaseActor>())
                     {
-                      
+
                         if (actor.location.X == gridPos.X && actor.location.Y == gridPos.Y)
                         {
-                            if(!actor.canBeBuiltOn)
+                            if (!actor.canBeBuiltOn)
                             {
                                 canSpawn &= false; break;
                             }
@@ -124,15 +135,15 @@ namespace City
                     {
 
 
-                        Game.AddActor(new PowerSourceBuilding(Game,"generator", new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32, 32, 32), new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32, 96, 96), new Vector3(gridPos.X, gridPos.Y, 0), new Vector3(0, 0, 0), 5.0f));
+                        Game.AddActor(new PowerSourceBuilding(Game, "generator", new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32, 32, 32), new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32, 96, 96), new Vector3(gridPos.X, gridPos.Y, 0), new Vector3(0, 0, 0), 5.0f));
                         Game.actors[Game.actors.Count - 1].Components.Add(new Engine.Components.ImageDisplayComponent(Game, Game.actors[Game.actors.Count - 1], "Textures/light_source"));
                         Game.actors[Game.actors.Count - 1].Init();
 
-                        spawnPowerSource.Play();
+                        Game.soundPlayer.PlaySound(spawnPowerSource, null, false);
                     }
                     else
                     {
-                        spawnFailSound.Play();
+                        Game.soundPlayer.PlaySound(spawnFailSound, null, false);
                     }
 
                 }
@@ -158,6 +169,24 @@ namespace City
                 }
             }
 
+        }
+
+        public override void Dispose()
+        {
+            PendingKill = true;
+            foreach (var item in components)
+            {
+                item.Dispose();
+            }
+            foreach (var child in Children)
+            {
+                child.Dispose();
+            }
+            spawnFailSound.release();
+            spawnPowerSource.release();
+            spawnSuccess.release();
+
+            System.GC.SuppressFinalize(this);
         }
     }
 }

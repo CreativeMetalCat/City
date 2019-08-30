@@ -6,6 +6,10 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using NoiseTest;
 
+
+
+  
+
 namespace City
 {
     /// <summary>
@@ -17,7 +21,7 @@ namespace City
         SpriteBatch spriteBatch;
         Texture2D placeholder;
 
-        SoundEffect beam;
+        public Engine.Sound.SoundPlayer soundPlayer;
 
         Actor mouseDisplayActor;
         Engine.Components.CameraComponent currentCamera;
@@ -35,6 +39,14 @@ namespace City
         /// </summary>
         public readonly List<Actor> actors = new List<Actor>();
 
+
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+        public static extern System.IntPtr LoadLibrary(string dllToLoad);
+
+        public string GetContentDirectory()
+        {
+            return System.Environment.CurrentDirectory + "/" + Content.RootDirectory;
+        }
 
         public Actor GetActorByName(string name, bool useId = true)
         {
@@ -139,12 +151,18 @@ namespace City
         {
             // TODO: Add your initialization logic here
 
+            //FMOD.VERSION.dll
             base.Initialize();
-
+            System.Diagnostics.Debug.WriteLine(System.IO.Path.GetFullPath("FMOD/64/fmod.dll"));
+            if (System.Environment.Is64BitProcess)
+                LoadLibrary(System.IO.Path.GetFullPath("FMOD/64/fmod.dll"));
+            else
+                LoadLibrary(System.IO.Path.GetFullPath("FMOD/32/fmod.dll"));
 
             truck = Content.Load<Model>("Models/truck");
 
-            beam = Content.Load<SoundEffect>("Sounds/beams/beamstart5");
+            soundPlayer = new Engine.Sound.SoundPlayer(this);
+            soundPlayer.Init();
 
 
             mouseDisplayActor = new Engine.Actor(this, "mousedisplay", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f);
@@ -156,21 +174,20 @@ namespace City
 
 
             AddActor(new Player(this, "player", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f));
-
-            currentCamera = new Engine.Components.CameraComponent(this, GetActorByName("player"), new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, -5));
-            GetActorByName("player").Components.Add(currentCamera);
             GetActorByName("player").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("player")));
 
             GetActorByName("player").Init();
+
+            currentCamera = (GetActorByName("player") as Player).playerCamera;
 
             OpenSimplexNoise oSimplexNoise = new OpenSimplexNoise();
             for (int x = 0; x < 50; x++)
             {
                 for (int y = 0; y < 50; y++)
                 {
-                    double fNoise = oSimplexNoise.Evaluate(x, y);
+                    double fNoise = oSimplexNoise.Evaluate(x/2, y/2);
 
-                    if (fNoise < -0.3)
+                    if (fNoise < -0.1)
                     {
                         int copyId = AddActor(new GroundBaseActor(this, "water", false, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
                         if (copyId != 0)
@@ -185,7 +202,7 @@ namespace City
                         }
 
                     }
-                    else if (fNoise >= 0)
+                    else if (fNoise >= 0&&fNoise<0.5)
                     {
                         int copyId = AddActor(new GroundBaseActor(this, "grass", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
                         if (copyId != 0)
@@ -200,7 +217,21 @@ namespace City
                         }
 
                     }
-                    else if (fNoise >= -0.3 && fNoise < 0)
+                    else if(fNoise >= 0.5)
+                    {
+                        int copyId = AddActor(new GroundBaseActor(this, "snow", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
+                        if (copyId != 0)
+                        {
+                            GetActorByName("snow" + copyId).Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("snow" + copyId), "Textures/nature/snow1"));
+                            GetActorByName("snow" + copyId).Init();
+                        }
+                        else
+                        {
+                            GetActorByName("snow").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("snow"), "Textures/nature/snow1"));
+                            GetActorByName("snow").Init();
+                        }
+                    }
+                    else if (fNoise >= -0.1 && fNoise < 0)
                     {
                         int copyId = AddActor(new GroundBaseActor(this, "sand", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
                         if (copyId != 0)
