@@ -10,7 +10,10 @@ namespace City
         FMOD.Sound spawnPowerSource;
         FMOD.Sound spawnSuccess;
 
-        readonly AudioListener listener;
+        /// <summary>
+        /// If game has more that one player
+        /// </summary>
+        public readonly int playerId = 0;
 
         public Engine.Components.CameraComponent playerCamera;
 
@@ -30,11 +33,11 @@ namespace City
         {
             System.Diagnostics.Debug.WriteLine(Game.GetContentDirectory() + "/Sounds/ui/gameplay/cannot-build.wav");
 
-            spawnFailSound = Game.soundPlayer.LoadSound(Game.GetContentDirectory() + "/Sounds/ui/gameplay/cannot-build.wav", FMOD.MODE._2D);
+            spawnFailSound = Game.soundPlayer.LoadSound(Game.GetContentDirectory() + "/Sounds/ui/gameplay/cannot-build.wav", FMOD.MODE._3D_LINEARROLLOFF);
 
-            spawnPowerSource = Game.soundPlayer.LoadSound(Game.GetContentDirectory() + "/Sounds/ui/gameplay/wire-connect-pole.wav", FMOD.MODE._2D);
+            spawnPowerSource = Game.soundPlayer.LoadSound(Game.GetContentDirectory() + "/Sounds/ui/gameplay/wire-connect-pole.wav", FMOD.MODE._3D_LINEARROLLOFF);
 
-            spawnSuccess = Game.soundPlayer.LoadSound(Game.GetContentDirectory() + "/Sounds/ui/gameplay/build-large.wav", FMOD.MODE._2D);
+            spawnSuccess = Game.soundPlayer.LoadSound(Game.GetContentDirectory() + "/Sounds/ui/gameplay/build-large.wav", FMOD.MODE._3D_LINEARROLLOFF);
 
             playerCamera = new Engine.Components.CameraComponent(Game, this, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
 
@@ -88,12 +91,29 @@ namespace City
                         Game.actors[Game.actors.Count - 1].Components.Add(new Engine.Components.ImageDisplayComponent(Game, Game.actors[Game.actors.Count - 1], "Textures/grassy_bricks"));
                         Game.actors[Game.actors.Count - 1].Init();
 
+                        FMOD.VECTOR pos = new FMOD.VECTOR();
+                        pos.x = Game.actors[Game.actors.Count - 1].location.X;
+                        pos.y = Game.actors[Game.actors.Count - 1].location.Y;
+                        pos.z = Game.actors[Game.actors.Count - 1].location.Z;
 
-                        Game.soundPlayer.PlaySound(spawnSuccess, null, false);
+                        FMOD.VECTOR vel = new FMOD.VECTOR();
+
+                        FMOD.VECTOR alt_pane_pos = new FMOD.VECTOR();
+
+                        Game.soundPlayer.PlaySound(spawnSuccess, null, false).set3DAttributes(ref pos,ref vel,ref alt_pane_pos);
                     }
                     else
                     {
-                        Game.soundPlayer.PlaySound(spawnFailSound, null, false);
+                        FMOD.VECTOR pos = new FMOD.VECTOR();
+                        pos.x = gridPos.X;
+                        pos.y = gridPos.Y;
+                        pos.z = 0;
+
+                        FMOD.VECTOR vel = new FMOD.VECTOR();
+
+                        FMOD.VECTOR alt_pane_pos = new FMOD.VECTOR();
+
+                        Game.soundPlayer.PlaySound(spawnFailSound, null, false).set3DAttributes(ref pos, ref vel, ref alt_pane_pos);
                     }
 
                 }
@@ -139,11 +159,29 @@ namespace City
                         Game.actors[Game.actors.Count - 1].Components.Add(new Engine.Components.ImageDisplayComponent(Game, Game.actors[Game.actors.Count - 1], "Textures/light_source"));
                         Game.actors[Game.actors.Count - 1].Init();
 
-                        Game.soundPlayer.PlaySound(spawnPowerSource, null, false);
+                        FMOD.VECTOR pos = new FMOD.VECTOR();
+                        pos.x = Game.actors[Game.actors.Count - 1].location.X;
+                        pos.y = Game.actors[Game.actors.Count - 1].location.Y;
+                        pos.z = Game.actors[Game.actors.Count - 1].location.Z;
+
+                        FMOD.VECTOR vel = new FMOD.VECTOR();
+
+                        FMOD.VECTOR alt_pane_pos = new FMOD.VECTOR();
+
+                        Game.soundPlayer.PlaySound(spawnPowerSource, null, false).set3DAttributes(ref pos, ref vel, ref alt_pane_pos);
                     }
                     else
                     {
-                        Game.soundPlayer.PlaySound(spawnFailSound, null, false);
+                        FMOD.VECTOR pos = new FMOD.VECTOR();
+                        pos.x = gridPos.X;
+                        pos.y = gridPos.Y;
+                        pos.z = 0;
+
+                        FMOD.VECTOR vel = new FMOD.VECTOR();
+
+                        FMOD.VECTOR alt_pane_pos = new FMOD.VECTOR();
+
+                        Game.soundPlayer.PlaySound(spawnFailSound, null, false).set3DAttributes(ref pos, ref vel, ref alt_pane_pos);
                     }
 
                 }

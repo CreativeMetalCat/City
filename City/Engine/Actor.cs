@@ -10,6 +10,9 @@ namespace City.Engine
 
         public Microsoft.Xna.Framework.Vector3 location;
 
+        /// <summary>
+        /// x-Yaw,y-Pitch,Z-roll in radians
+        /// </summary>
         public Microsoft.Xna.Framework.Vector3 rotation;
 
         protected double lifeTime;
@@ -40,6 +43,13 @@ namespace City.Engine
 
         #endregion
 
+        public Matrix GetMatrix()
+        {
+            return Matrix.CreateRotationX(MathHelper.ToRadians(rotation.X))
+                * Matrix.CreateRotationY(MathHelper.ToRadians(rotation.Y))
+                * Matrix.CreateRotationZ(MathHelper.ToRadians(rotation.Z))
+                * Matrix.CreateTranslation(location);
+        }
         public delegate void OnMousePressedDelegate();
 
         public event OnMousePressedDelegate OnMousePressed;
@@ -129,6 +139,7 @@ namespace City.Engine
 
         public override void Dispose()
         {
+            
             PendingKill = true;
             foreach (var item in components)
             {

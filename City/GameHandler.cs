@@ -1,14 +1,13 @@
 ﻿using City.Engine;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Collections.Generic;
 using NoiseTest;
+using System.Collections.Generic;
 
 
 
-  
+
 
 namespace City
 {
@@ -173,19 +172,16 @@ namespace City
 
 
 
-            AddActor(new Player(this, "player", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f));
-            GetActorByName("player").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("player")));
+           
 
-            GetActorByName("player").Init();
-
-            currentCamera = (GetActorByName("player") as Player).playerCamera;
+          
 
             OpenSimplexNoise oSimplexNoise = new OpenSimplexNoise();
             for (int x = 0; x < 50; x++)
             {
                 for (int y = 0; y < 50; y++)
                 {
-                    double fNoise = oSimplexNoise.Evaluate(x/2, y/2);
+                    double fNoise = oSimplexNoise.Evaluate(x / 2, y / 2);
 
                     if (fNoise < -0.1)
                     {
@@ -202,7 +198,7 @@ namespace City
                         }
 
                     }
-                    else if (fNoise >= 0&&fNoise<0.5)
+                    else if (fNoise >= 0 && fNoise < 0.5)
                     {
                         int copyId = AddActor(new GroundBaseActor(this, "grass", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
                         if (copyId != 0)
@@ -217,7 +213,7 @@ namespace City
                         }
 
                     }
-                    else if(fNoise >= 0.5)
+                    else if (fNoise >= 0.5)
                     {
                         int copyId = AddActor(new GroundBaseActor(this, "snow", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
                         if (copyId != 0)
@@ -247,6 +243,12 @@ namespace City
                     }
                 }
             }
+
+            AddActor(new Player(this, "player", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f));
+            GetActorByName("player").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("player")));
+            GetActorByName("player").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("player"), "Textures/solid"));
+            GetActorByName("player").Init();
+            currentCamera = (GetActorByName("player") as Player).playerCamera;
         }
 
         /// <summary>
@@ -279,6 +281,8 @@ namespace City
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -329,7 +333,9 @@ namespace City
             mouseDisplayActor.HandleInput(Keyboard.GetState().GetPressedKeys());
             mouseDisplayActor.Update(gameTime);
 
-
+            GetActorByName("player").GetMatrix();
+            soundPlayer.Set3DListenerAttributes((GetActorByName("player") as Player).playerId, GetActorByName("player").location, new Vector3(0, 0, 0), GetActorByName("player").GetMatrix().Forward, GetActorByName("player").GetMatrix().Up);
+            soundPlayer.Update(gameTime);
         }
 
         /// <summary>
@@ -355,5 +361,7 @@ namespace City
 
             base.Draw(gameTime);
         }
+
+        
     }
 }
