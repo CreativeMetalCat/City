@@ -175,7 +175,7 @@ namespace City
             {
                 for (int y = 0; y < 50; y++)
                 {
-                    double fNoise = oSimplexNoise.Evaluate(x / 2, y / 2);
+                    double fNoise = oSimplexNoise.Evaluate(x / 1.5, y / 1);
 
                     if (fNoise < -0.1)
                     {
@@ -238,10 +238,22 @@ namespace City
                 }
             }
 
+            AddActor(new Actor(this,"ConcertHallReverb", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f));
+            GetActorByName("ConcertHallReverb").Components.Add(new Engine.Components.ReverbComponent(this, GetActorByName("ConcertHallReverb"), new Vector3(0, 0, 0), FMOD.PRESET.CONCERTHALL(), 32, 32));
+            GetActorByName("ConcertHallReverb").Init();
+
+            AddActor(new Actor(this, "QUARRYReverb", new Vector3(128, 0, 0), new Vector3(0, 0, 0), 0.0f));
+            GetActorByName("QUARRYReverb").Components.Add(new Engine.Components.ReverbComponent(this, GetActorByName("QUARRYReverb"), new Vector3(0, 0, 0), FMOD.PRESET.QUARRY(), 32, 32));
+            GetActorByName("QUARRYReverb").Init();
+
+            AddActor(new Actor(this, "UNDERWATEReverb", new Vector3(0, 128, 0), new Vector3(0, 0, 0), 0.0f));
+            GetActorByName("UNDERWATEReverb").Components.Add(new Engine.Components.ReverbComponent(this, GetActorByName("UNDERWATEReverb"), new Vector3(0, 0, 0), FMOD.PRESET.UNDERWATER(), 32, 32));
+            GetActorByName("UNDERWATEReverb").Init();
+
             AddActor(new Player(this, "player", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f));
             GetActorByName("player").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("player")));
             GetActorByName("player").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("player"), "Textures/solid"));
-            GetActorByName("player").Components.Add(new Engine.Components.ReverbComponent(this, GetActorByName("player"), new Vector3(0, 0, 0), FMOD.PRESET.CONCERTHALL(), 32, 128));
+            
             GetActorByName("player").Init();
             currentCamera = (GetActorByName("player") as Player).playerCamera;
         }
