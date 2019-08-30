@@ -21,6 +21,15 @@ namespace City.Engine.Components
 
             if (owner == null) { throw new Exceptions.NullOnwerException("Owner of component " + Name + " was null"); }
         }
+
+        /// <summary>
+        /// If component is supposed to have location
+        /// </summary>
+        /// <returns>Returs location+ownerlocation or  throws System.NotImplementedException </returns>
+        public virtual Vector3 GetWorldLocation()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
     public class DrawableComponent : Component

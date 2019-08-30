@@ -170,12 +170,6 @@ namespace City
             mouseDisplayActor.Components.Add(new Engine.Components.MouseFollowComponent(this, mouseDisplayActor));
             mouseDisplayActor.Init();
 
-
-
-           
-
-          
-
             OpenSimplexNoise oSimplexNoise = new OpenSimplexNoise();
             for (int x = 0; x < 50; x++)
             {
@@ -247,6 +241,7 @@ namespace City
             AddActor(new Player(this, "player", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f));
             GetActorByName("player").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("player")));
             GetActorByName("player").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("player"), "Textures/solid"));
+            GetActorByName("player").Components.Add(new Engine.Components.ReverbComponent(this, GetActorByName("player"), new Vector3(0, 0, 0), FMOD.PRESET.CONCERTHALL(), 32, 128));
             GetActorByName("player").Init();
             currentCamera = (GetActorByName("player") as Player).playerCamera;
         }
@@ -362,6 +357,6 @@ namespace City
             base.Draw(gameTime);
         }
 
-        
+
     }
 }

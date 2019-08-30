@@ -6,6 +6,16 @@ namespace City.Engine.Sound
     public class SoundPlayer : Object
     {
 
+        public static FMOD.VECTOR FMODVectorFromVector3(Vector3 vector)
+        {
+            FMOD.VECTOR res = new FMOD.VECTOR();
+            res.x = vector.X;
+            res.y = vector.Y;
+            res.z = vector.Z;
+
+            return res;
+        }
+
         FMOD.System soundSystem;
 
         public SoundPlayer(GameHandler game) : base(game)
@@ -52,32 +62,56 @@ namespace City.Engine.Sound
             }
         }
 
+        public FMOD.Reverb3D CreateReverb(FMOD.REVERB_PROPERTIES props, Vector3 location, float maxDist, float minDist)
+        {
+            FMOD.Reverb3D reverb;
+            FMOD.RESULT res = soundSystem.createReverb3D(out reverb);
+            if (res == FMOD.RESULT.OK)
+            {
+                res = reverb.setProperties(ref props);
+                if (res == FMOD.RESULT.OK)
+                {
+                    FMOD.VECTOR pos = new FMOD.VECTOR();
+                    pos.x = location.X;
+                    pos.y = location.Y;
+                    pos.z = location.Z;
+
+                    res = reverb.set3DAttributes(ref pos, minDist, maxDist);
+                    if (res == FMOD.RESULT.OK)
+                    {
+
+                        return reverb;
+                    }
+                    else
+                    {
+                        throw new Exceptions.LoadFailException(FMOD.Error.String(res));
+                    }
+                }
+                else
+                {
+                    throw new Exceptions.LoadFailException(FMOD.Error.String(res));
+                }
+            }
+            else
+            {
+                throw new Exceptions.LoadFailException(FMOD.Error.String(res));
+            }
+        }
+
         public void Set3DListenerAttributes(int listenerId, Vector3 location, Vector3 velocity, Vector3 forward, Vector3 up)
         {
             //Vectors here are changed into fmod's one so that in future it will be easier to modify them
-            FMOD.VECTOR FMODPos = new FMOD.VECTOR();
-            FMODPos.x = location.X;
-            FMODPos.y = location.Y;
-            FMODPos.z = location.Z;
+            FMOD.VECTOR FMODPos = SoundPlayer.FMODVectorFromVector3(location);
 
-            FMOD.VECTOR FMODvel = new FMOD.VECTOR();
-            FMODvel.x = velocity.X;
-            FMODvel.y = velocity.Y;
-            FMODvel.z = velocity.Z;
+            FMOD.VECTOR FMODvel = SoundPlayer.FMODVectorFromVector3(velocity);
 
-            FMOD.VECTOR FMODForw = new FMOD.VECTOR();
-            FMODForw.x = forward.X;
-            FMODForw.y = forward.Y;
-            FMODForw.z = forward.Z;
-            
-            FMOD.VECTOR FMODUp = new FMOD.VECTOR();
-            FMODUp.x = up.X;
-            FMODUp.y = up.Y;
-            FMODUp.z = up.Z;
+            FMOD.VECTOR FMODForw = SoundPlayer.FMODVectorFromVector3(forward);
+
+            FMOD.VECTOR FMODUp = SoundPlayer.FMODVectorFromVector3(up);
 
             //Matrix.CreateTranslation(location).Up
 
-            FMOD.RESULT res = soundSystem.set3DListenerAttributes(listenerId,ref FMODPos,ref FMODvel,ref FMODForw,ref FMODUp);
+            FMOD.RESULT res = soundSystem.set3DListenerAttributes(listenerId, ref FMODPos, ref FMODvel, ref FMODForw, ref FMODUp);
             if (res != FMOD.RESULT.OK)
             {
                 throw new Exceptions.LoadFailException(FMOD.Error.String(res));

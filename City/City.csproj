@@ -63,6 +63,7 @@
     <Compile Include="Engine\Component.cs" />
     <Compile Include="Engine\EngineExceptions.cs" />
     <Compile Include="Engine\ImageDisplayComponent.cs" />
+    <Compile Include="Engine\Sound\ReverbComponent.cs" />
     <Compile Include="Engine\Sound\SoundPlayer.cs" />
     <Compile Include="FMOD\fmod.cs" />
     <Compile Include="FMOD\fmod_dsp.cs" />
