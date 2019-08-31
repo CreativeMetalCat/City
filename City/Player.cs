@@ -159,8 +159,8 @@ namespace City
                         {
 
 
-                            Game.AddActor(new PowerSourceBuilding(Game, "generator", new Rectangle((int)gridPos.X, (int)gridPos.Y, 64, 64), new Rectangle((int)gridPos.X - 64, (int)gridPos.Y - 32, 192, 128), new Vector3(gridPos.X, gridPos.Y, 0), new Vector3(0, 0, 0), 0.0f));
-                            Game.actors[Game.actors.Count - 1].Components.Add(new Engine.Components.ImageDisplayComponent(Game, Game.actors[Game.actors.Count - 1], "Textures/buildings/power_generator64x64"));
+                            Game.AddActor(BuildingSystem.Factory.CreateGeneratorBuilding(Game, new Vector3(gridPos.X, gridPos.Y,0),new Vector3(0,0,0)));
+
                             Game.actors[Game.actors.Count - 1].Init();
 
                             FMOD.VECTOR pos = new FMOD.VECTOR();

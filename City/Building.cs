@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace City
 {
-    class Building : Engine.Actor
+    public class Building : Engine.Actor
     {
         /// <summary>
         /// Primitive solution to prevent spawning buildings on each other
@@ -36,7 +36,7 @@ namespace City
         }
     }
 
-    class PowerConsumingBuilding : Building
+    public class PowerConsumingBuilding : Building
     {
         /// <summary>
         /// Range where builng can be powered from source. Should be bigger that collision
@@ -78,7 +78,7 @@ namespace City
         }
 
     }
-    class PowerSourceBuilding : Building
+    public class PowerSourceBuilding : Building
     {
         /// <summary>
         /// Range where other builng can be powered. Should be bigger that collision

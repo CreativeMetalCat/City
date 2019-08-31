@@ -58,6 +58,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Building.cs" />
+    <Compile Include="BuildingSystem\Factory.cs" />
     <Compile Include="Engine\Actor.cs" />
     <Compile Include="Engine\CameraComponent.cs" />
     <Compile Include="Engine\Component.cs" />
