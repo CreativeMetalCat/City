@@ -4,7 +4,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using NoiseTest;
 using System.Collections.Generic;
-
+using Myra;
+using Myra.Graphics2D.UI;
 
 
 
@@ -21,6 +22,8 @@ namespace City
         Texture2D placeholder;
 
         public Engine.Sound.SoundPlayer soundPlayer;
+
+        public Myra.Graphics2D.UI.Desktop _desktop;
 
         Actor mouseDisplayActor;
         Engine.Components.CameraComponent currentCamera;
@@ -150,6 +153,9 @@ namespace City
         {
             // TODO: Add your initialization logic here
 
+            IsMouseVisible = true;
+
+
             //FMOD.VERSION.dll
             base.Initialize();
             System.Diagnostics.Debug.WriteLine(System.IO.Path.GetFullPath("FMOD/64/fmod.dll"));
@@ -175,11 +181,11 @@ namespace City
             {
                 for (int y = 0; y < 50; y++)
                 {
-                    double fNoise = oSimplexNoise.Evaluate(x / 1.5, y / 1);
+                    double fNoise = oSimplexNoise.Evaluate(x / 2, y / 2);
 
                     if (fNoise < -0.1)
                     {
-                        int copyId = AddActor(new GroundBaseActor(this, "water", false, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
+                        int copyId = AddActor(new GroundBaseActor(this, "water", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
                         if (copyId != 0)
                         {
                             GetActorByName("water" + copyId).Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("water" + copyId), "Textures/nature/water1"));
@@ -238,7 +244,7 @@ namespace City
                 }
             }
 
-            AddActor(new Actor(this,"ConcertHallReverb", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f));
+            AddActor(new Actor(this, "ConcertHallReverb", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f));
             GetActorByName("ConcertHallReverb").Components.Add(new Engine.Components.ReverbComponent(this, GetActorByName("ConcertHallReverb"), new Vector3(0, 0, 0), FMOD.PRESET.CONCERTHALL(), 32, 32));
             GetActorByName("ConcertHallReverb").Init();
 
@@ -253,7 +259,7 @@ namespace City
             AddActor(new Player(this, "player", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f));
             GetActorByName("player").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("player")));
             GetActorByName("player").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("player"), "Textures/solid"));
-            
+
             GetActorByName("player").Init();
             currentCamera = (GetActorByName("player") as Player).playerCamera;
         }
@@ -270,6 +276,69 @@ namespace City
             // TODO: use this.Content to load your game content here
 
             placeholder = this.Content.Load<Texture2D>("Textures/picture");
+
+            MyraEnvironment.Game = this;
+
+            var grid = new Grid
+            {
+                RowSpacing = 8,
+                ColumnSpacing = 8
+            };
+
+            grid.ColumnsProportions.Add(new Grid.Proportion(Grid.ProportionType.Auto));
+            grid.ColumnsProportions.Add(new Grid.Proportion(Grid.ProportionType.Auto));
+            grid.RowsProportions.Add(new Grid.Proportion(Grid.ProportionType.Auto));
+            grid.RowsProportions.Add(new Grid.Proportion(Grid.ProportionType.Auto));
+
+            // TextBlock
+            var helloWorld = new TextBlock
+            {
+                Id = "label",
+                Text = "Hello, World!"
+            };
+            grid.Widgets.Add(helloWorld);
+
+            // ComboBox
+            var combo = new ComboBox
+            {
+                GridColumn = 1,
+                GridRow = 0
+            };
+
+            combo.Items.Add(new ListItem("Red", Color.Red));
+            combo.Items.Add(new ListItem("Green", Color.Green));
+            combo.Items.Add(new ListItem("Blue", Color.Blue));
+            grid.Widgets.Add(combo);
+
+            // Button
+            var button = new TextButton
+            {
+                GridColumn = 0,
+                GridRow = 1,
+                Text = "Show"
+            };
+
+            button.MouseDown += (s, a) =>
+            {
+                var messageBox = Dialog.CreateMessageBox("Message", "Some message!");
+                messageBox.ShowModal(_desktop);
+            };
+
+            grid.Widgets.Add(button);
+
+            // Spin button
+            var spinButton = new SpinButton
+            {
+                GridColumn = 1,
+                GridRow = 1,
+                Width = 100,
+                Nullable = true
+            };
+            grid.Widgets.Add(spinButton);
+
+            // Add it to the desktop
+            _desktop = new Desktop();
+            _desktop.Widgets.Add(grid);
         }
 
         /// <summary>
@@ -362,10 +431,16 @@ namespace City
                 actor.Draw(currentCamera.ViewMatrix, currentCamera.ProjectionMatrix);
                 actor.Draw(spriteBatch);
             }
-            mouseDisplayActor.Draw(spriteBatch);
-            mouseDisplayActor.Draw(currentCamera.ViewMatrix, currentCamera.ProjectionMatrix);
+            if (!IsMouseVisible)
+            {
+                mouseDisplayActor.Draw(spriteBatch);
+                mouseDisplayActor.Draw(currentCamera.ViewMatrix, currentCamera.ProjectionMatrix);
+            }
             spriteBatch.End();
 
+            _desktop.Bounds = new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth,
+                                                    GraphicsDevice.PresentationParameters.BackBufferHeight);
+            _desktop.Render();
             base.Draw(gameTime);
         }
 

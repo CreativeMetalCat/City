@@ -57,140 +57,144 @@ namespace City
                 comp.HandleInput(keys);
 
             }
-            if (Microsoft.Xna.Framework.Input.Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
+            if (!Game._desktop.IsMouseOverGUI)
             {
-                if (!leftMouseButtonPressed)
+                if (Microsoft.Xna.Framework.Input.Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
                 {
-                    leftMouseButtonPressed = true;
-
-                    Vector3 gridPos = new Vector3();
-
-                    gridPos.X = (int)(Microsoft.Xna.Framework.Input.Mouse.GetState().Position.X / Game.gridSize.X) * Game.gridSize.X;
-                    gridPos.Y = (int)(Microsoft.Xna.Framework.Input.Mouse.GetState().Position.Y / Game.gridSize.Y) * Game.gridSize.Y;
-                    gridPos.Z = 0;
-
-                    bool canSpawn = true;
-                    foreach (var actor in Game.actors.OfType<GroundBaseActor>())
+                    if (!leftMouseButtonPressed)
                     {
-                        if (actor.location.X == gridPos.X && actor.location.Y == gridPos.Y)
+                        leftMouseButtonPressed = true;
+
+                        Vector3 gridPos = new Vector3();
+
+                        gridPos.X = (int)(Microsoft.Xna.Framework.Input.Mouse.GetState().Position.X / Game.gridSize.X) * Game.gridSize.X;
+                        gridPos.Y = (int)(Microsoft.Xna.Framework.Input.Mouse.GetState().Position.Y / Game.gridSize.Y) * Game.gridSize.Y;
+                        gridPos.Z = 0;
+
+                        bool canSpawn = true;
+                        foreach (var actor in Game.actors.OfType<GroundBaseActor>())
                         {
-                            if (!actor.canBeBuiltOn)
+
+                            if (actor.location.X == gridPos.X && actor.location.Y == gridPos.Y)
                             {
-                                canSpawn &= false; break;
+                                if (!actor.canBeBuiltOn)
+                                {
+                                    canSpawn &= false; break;
+                                }
                             }
                         }
-                    }
-                    foreach (var actor in Game.actors.OfType<Building>())
-                    {
-                        if (actor.location.X == gridPos.X && actor.location.Y == gridPos.Y) { canSpawn &= false; break; }
-                    }
-
-                    if (canSpawn)
-                    {//new Vector3(Microsoft.Xna.Framework.Input.Mouse.GetState().X, Microsoft.Xna.Framework.Input.Mouse.GetState().Y, 0)
-                        Game.AddActor(new PowerConsumingBuilding(Game, "consumer", new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32, 64, 64), new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32, 64, 64), new Vector3(gridPos.X, gridPos.Y, 0), new Vector3(0, 0, 0), 6.0f));
-                        Game.actors[Game.actors.Count - 1].Components.Add(new Engine.Components.ImageDisplayComponent(Game, Game.actors[Game.actors.Count - 1], "Textures/grassy_bricks"));
-                        Game.actors[Game.actors.Count - 1].Init();
-
-                        FMOD.VECTOR pos = new FMOD.VECTOR();
-                        pos.x = Game.actors[Game.actors.Count - 1].location.X;
-                        pos.y = Game.actors[Game.actors.Count - 1].location.Y;
-                        pos.z = Game.actors[Game.actors.Count - 1].location.Z;
-
-                        FMOD.VECTOR vel = new FMOD.VECTOR();
-
-                        FMOD.VECTOR alt_pane_pos = new FMOD.VECTOR();
-
-                        Game.soundPlayer.PlaySound(spawnSuccess, null, false).set3DAttributes(ref pos,ref vel,ref alt_pane_pos);
-                    }
-                    else
-                    {
-                        FMOD.VECTOR pos = new FMOD.VECTOR();
-                        pos.x = gridPos.X;
-                        pos.y = gridPos.Y;
-                        pos.z = 0;
-
-                        FMOD.VECTOR vel = new FMOD.VECTOR();
-
-                        FMOD.VECTOR alt_pane_pos = new FMOD.VECTOR();
-
-                        Game.soundPlayer.PlaySound(spawnFailSound, null, false).set3DAttributes(ref pos, ref vel, ref alt_pane_pos);
-                    }
-
-                }
-            }
-            if (Microsoft.Xna.Framework.Input.Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Released)
-            {
-                leftMouseButtonPressed = false;
-            }
-
-            if (Microsoft.Xna.Framework.Input.Mouse.GetState().RightButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
-            {
-                if (!rightMouseButtonPressed)
-                {
-                    rightMouseButtonPressed = true;
-
-                    Vector3 gridPos = new Vector3();
-
-                    gridPos.X = (int)(Microsoft.Xna.Framework.Input.Mouse.GetState().Position.X / Game.gridSize.X) * Game.gridSize.X;
-                    gridPos.Y = (int)(Microsoft.Xna.Framework.Input.Mouse.GetState().Position.Y / Game.gridSize.Y) * Game.gridSize.Y;
-                    gridPos.Z = 0;
-
-                    bool canSpawn = true;
-                    foreach (var actor in Game.actors.OfType<GroundBaseActor>())
-                    {
-
-                        if (actor.location.X == gridPos.X && actor.location.Y == gridPos.Y)
+                        foreach (var actor in Game.actors.OfType<Building>())
                         {
-                            if (!actor.canBeBuiltOn)
+                            if (actor.collision.Intersects(new Rectangle((int)gridPos.X, (int)gridPos.Y, 32, 32))) { canSpawn &= false; break; }
+
+                        }
+
+                        if (canSpawn)
+                        {//new Vector3(Microsoft.Xna.Framework.Input.Mouse.GetState().X, Microsoft.Xna.Framework.Input.Mouse.GetState().Y, 0)
+                            Game.AddActor(new PowerConsumingBuilding(Game, "consumer", new Rectangle((int)gridPos.X , (int)gridPos.Y ,32, 32), new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32, 64, 64), new Vector3(gridPos.X, gridPos.Y, 0), new Vector3(0, 0, 0), 6.0f));
+                            Game.actors[Game.actors.Count - 1].Components.Add(new Engine.Components.ImageDisplayComponent(Game, Game.actors[Game.actors.Count - 1], "Textures/grassy_bricks"));
+                            Game.actors[Game.actors.Count - 1].Init();
+
+                            FMOD.VECTOR pos = new FMOD.VECTOR();
+                            pos.x = Game.actors[Game.actors.Count - 1].location.X;
+                            pos.y = Game.actors[Game.actors.Count - 1].location.Y;
+                            pos.z = Game.actors[Game.actors.Count - 1].location.Z;
+
+                            FMOD.VECTOR vel = new FMOD.VECTOR();
+
+                            FMOD.VECTOR alt_pane_pos = new FMOD.VECTOR();
+
+                            Game.soundPlayer.PlaySound(spawnSuccess, null, false).set3DAttributes(ref pos, ref vel, ref alt_pane_pos);
+                        }
+                        else
+                        {
+                            FMOD.VECTOR pos = new FMOD.VECTOR();
+                            pos.x = gridPos.X;
+                            pos.y = gridPos.Y;
+                            pos.z = 0;
+
+                            FMOD.VECTOR vel = new FMOD.VECTOR();
+
+                            FMOD.VECTOR alt_pane_pos = new FMOD.VECTOR();
+
+                            Game.soundPlayer.PlaySound(spawnFailSound, null, false).set3DAttributes(ref pos, ref vel, ref alt_pane_pos);
+                        }
+
+                    }
+                }
+                if (Microsoft.Xna.Framework.Input.Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Released)
+                {
+                    leftMouseButtonPressed = false;
+                }
+
+                if (Microsoft.Xna.Framework.Input.Mouse.GetState().RightButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
+                {
+                    if (!rightMouseButtonPressed)
+                    {
+                        rightMouseButtonPressed = true;
+
+                        Vector3 gridPos = new Vector3();
+
+                        gridPos.X = (int)(Microsoft.Xna.Framework.Input.Mouse.GetState().Position.X / Game.gridSize.X) * Game.gridSize.X;
+                        gridPos.Y = (int)(Microsoft.Xna.Framework.Input.Mouse.GetState().Position.Y / Game.gridSize.Y) * Game.gridSize.Y;
+                        gridPos.Z = 0;
+
+                        bool canSpawn = true;
+                        foreach (var actor in Game.actors.OfType<GroundBaseActor>())
+                        {
+
+                            if (actor.location.X == gridPos.X && actor.location.Y == gridPos.Y)
                             {
-                                canSpawn &= false; break;
+                                if (!actor.canBeBuiltOn)
+                                {
+                                    canSpawn &= false; break;
+                                }
                             }
                         }
+                        foreach (var actor in Game.actors.OfType<Building>())
+                        {
+                            if (actor.collision.Intersects(new Rectangle((int)gridPos.X, (int)gridPos.Y, 64, 64))) { canSpawn &= false; break; }
+                        }
+                        if (canSpawn)
+                        {
+
+
+                            Game.AddActor(new PowerSourceBuilding(Game, "generator", new Rectangle((int)gridPos.X, (int)gridPos.Y, 64, 64), new Rectangle((int)gridPos.X - 64, (int)gridPos.Y - 32, 192, 128), new Vector3(gridPos.X, gridPos.Y, 0), new Vector3(0, 0, 0), 0.0f));
+                            Game.actors[Game.actors.Count - 1].Components.Add(new Engine.Components.ImageDisplayComponent(Game, Game.actors[Game.actors.Count - 1], "Textures/buildings/power_generator64x64"));
+                            Game.actors[Game.actors.Count - 1].Init();
+
+                            FMOD.VECTOR pos = new FMOD.VECTOR();
+                            pos.x = Game.actors[Game.actors.Count - 1].location.X;
+                            pos.y = Game.actors[Game.actors.Count - 1].location.Y;
+                            pos.z = Game.actors[Game.actors.Count - 1].location.Z;
+
+                            FMOD.VECTOR vel = new FMOD.VECTOR();
+
+                            FMOD.VECTOR alt_pane_pos = new FMOD.VECTOR();
+
+                            Game.soundPlayer.PlaySound(spawnPowerSource, null, false).set3DAttributes(ref pos, ref vel, ref alt_pane_pos);
+                        }
+                        else
+                        {
+                            FMOD.VECTOR pos = new FMOD.VECTOR();
+                            pos.x = gridPos.X;
+                            pos.y = gridPos.Y;
+                            pos.z = 0;
+
+                            FMOD.VECTOR vel = new FMOD.VECTOR();
+
+                            FMOD.VECTOR alt_pane_pos = new FMOD.VECTOR();
+
+                            Game.soundPlayer.PlaySound(spawnFailSound, null, false).set3DAttributes(ref pos, ref vel, ref alt_pane_pos);
+                        }
+
                     }
-                    foreach (var actor in Game.actors.OfType<Building>())
-                    {
-                        if (actor.location.X == gridPos.X && actor.location.Y == gridPos.Y) { canSpawn &= false; break; }
-                    }
-                    if (canSpawn)
-                    {
-
-
-                        Game.AddActor(new PowerSourceBuilding(Game, "generator", new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32, 32, 32), new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32, 96, 96), new Vector3(gridPos.X, gridPos.Y, 0), new Vector3(0, 0, 0), 5.0f));
-                        Game.actors[Game.actors.Count - 1].Components.Add(new Engine.Components.ImageDisplayComponent(Game, Game.actors[Game.actors.Count - 1], "Textures/light_source"));
-                        Game.actors[Game.actors.Count - 1].Init();
-
-                        FMOD.VECTOR pos = new FMOD.VECTOR();
-                        pos.x = Game.actors[Game.actors.Count - 1].location.X;
-                        pos.y = Game.actors[Game.actors.Count - 1].location.Y;
-                        pos.z = Game.actors[Game.actors.Count - 1].location.Z;
-
-                        FMOD.VECTOR vel = new FMOD.VECTOR();
-
-                        FMOD.VECTOR alt_pane_pos = new FMOD.VECTOR();
-
-                        Game.soundPlayer.PlaySound(spawnPowerSource, null, false).set3DAttributes(ref pos, ref vel, ref alt_pane_pos);
-                    }
-                    else
-                    {
-                        FMOD.VECTOR pos = new FMOD.VECTOR();
-                        pos.x = gridPos.X;
-                        pos.y = gridPos.Y;
-                        pos.z = 0;
-
-                        FMOD.VECTOR vel = new FMOD.VECTOR();
-
-                        FMOD.VECTOR alt_pane_pos = new FMOD.VECTOR();
-
-                        Game.soundPlayer.PlaySound(spawnFailSound, null, false).set3DAttributes(ref pos, ref vel, ref alt_pane_pos);
-                    }
-
+                }
+                if (Microsoft.Xna.Framework.Input.Mouse.GetState().RightButton == Microsoft.Xna.Framework.Input.ButtonState.Released)
+                {
+                    rightMouseButtonPressed = false;
                 }
             }
-            if (Microsoft.Xna.Framework.Input.Mouse.GetState().RightButton == Microsoft.Xna.Framework.Input.ButtonState.Released)
-            {
-                rightMouseButtonPressed = false;
-            }
-
         }
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
         {

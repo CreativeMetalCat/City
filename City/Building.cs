@@ -62,6 +62,21 @@ namespace City
            //System.Diagnostics.Debug.WriteLine(powered);
         }
 
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+
+            Texture2D _texture;
+
+            _texture = new Texture2D(Game.GraphicsDevice, 1, 1);
+            _texture.SetData(new Color[] { Color.White });
+
+            spriteBatch.Draw(_texture, collision, Color.Blue);
+
+            base.Draw(spriteBatch);
+
+           
+        }
+
     }
     class PowerSourceBuilding : Building
     {
@@ -121,6 +136,11 @@ namespace City
             _texture.SetData(new Color[] { Color.White });
 
             spriteBatch.Draw(_texture, powerGererationRange, Color.Red);
+
+            _texture = new Texture2D(Game.GraphicsDevice, 1, 1);
+            _texture.SetData(new Color[] { Color.White });
+
+            spriteBatch.Draw(_texture, collision, Color.Green);
 
             foreach (var comp in components)
             {
