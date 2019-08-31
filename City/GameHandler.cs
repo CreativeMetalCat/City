@@ -2,10 +2,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using NoiseTest;
-using System.Collections.Generic;
 using Myra;
 using Myra.Graphics2D.UI;
+using NoiseTest;
+using System.Collections.Generic;
 
 
 
@@ -302,39 +302,14 @@ namespace City
             var combo = new ComboBox
             {
                 GridColumn = 1,
-                GridRow = 0
+                GridRow = 0,
+                Id = "buildingType"
             };
 
-            combo.Items.Add(new ListItem("Red", Color.Red));
-            combo.Items.Add(new ListItem("Green", Color.Green));
-            combo.Items.Add(new ListItem("Blue", Color.Blue));
+            combo.Items.Add(new ListItem("Dev.PowerSourceBuilding", Color.White));
+            combo.Items.Add(new ListItem("Dev.PowerConsumeBuilding", Color.White));
             grid.Widgets.Add(combo);
 
-            // Button
-            var button = new TextButton
-            {
-                GridColumn = 0,
-                GridRow = 1,
-                Text = "Show"
-            };
-
-            button.MouseDown += (s, a) =>
-            {
-                var messageBox = Dialog.CreateMessageBox("Message", "Some message!");
-                messageBox.ShowModal(_desktop);
-            };
-
-            grid.Widgets.Add(button);
-
-            // Spin button
-            var spinButton = new SpinButton
-            {
-                GridColumn = 1,
-                GridRow = 1,
-                Width = 100,
-                Nullable = true
-            };
-            grid.Widgets.Add(spinButton);
 
             // Add it to the desktop
             _desktop = new Desktop();
