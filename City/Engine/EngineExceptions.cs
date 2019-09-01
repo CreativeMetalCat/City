@@ -22,7 +22,27 @@ namespace City.Engine.Exceptions
         }
     }
 
+    /// <summary>
+    /// Thrown if there more that one physics body in actor
+    /// </summary>
+    public class PhysicsBodyOverflow : Exception
+    {
+        public PhysicsBodyOverflow()
+        {
+        }
 
+        public PhysicsBodyOverflow(string message) : base(message)
+        {
+        }
+
+        public PhysicsBodyOverflow(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        protected PhysicsBodyOverflow(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+    }
 
     [Serializable]
     public class LoadFailException : Exception

@@ -64,6 +64,7 @@
     <Compile Include="Engine\Component.cs" />
     <Compile Include="Engine\EngineExceptions.cs" />
     <Compile Include="Engine\ImageDisplayComponent.cs" />
+    <Compile Include="Engine\Physics\PhysicsBodyComponent.cs" />
     <Compile Include="Engine\Sound\ReverbComponent.cs" />
     <Compile Include="Engine\Sound\SoundPlayer.cs" />
     <Compile Include="FMOD\fmod.cs" />
@@ -78,6 +79,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Box2DX, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Box2DX.2.0.2.0\lib\net40\Box2DX.dll</HintPath>
+    </Reference>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\MonoGame.Framework.dll</HintPath>
     </Reference>

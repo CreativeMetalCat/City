@@ -45,36 +45,41 @@ namespace City
 
         public bool powered;
 
+        Engine.Components.ImageDisplayComponent noPowerIcon;
+
         public override bool Activated { get => base.Activated && powered; set => base.Activated = value; }
 
         public PowerConsumingBuilding(GameHandler game, Rectangle collision, Rectangle powerAcceptanceRange, Vector3 location, Vector3 rotation, double lifeTime) : base(game, collision, location, rotation, lifeTime)
         {
             this.powerAcceptanceRange = powerAcceptanceRange;
+            noPowerIcon = new Engine.Components.ImageDisplayComponent(game, this, "Textures/buildings/icon_nopower");
         }
 
         public PowerConsumingBuilding(GameHandler game, string Name, Rectangle collision, Rectangle powerAcceptanceRange, Vector3 location, Vector3 rotation, double lifeTime) : base(game, Name, collision, location, rotation, lifeTime)
         {
             this.powerAcceptanceRange = powerAcceptanceRange;
+            noPowerIcon = new Engine.Components.ImageDisplayComponent(game, this, "Textures/buildings/icon_nopower");
         }
 
         public override void Update(GameTime gameTime)
         {
-           //System.Diagnostics.Debug.WriteLine(powered);
+            //System.Diagnostics.Debug.WriteLine(powered);
+            base.Update(gameTime);
+            noPowerIcon.Update(gameTime);
+        }
+
+        public override void Init()
+        {
+            base.Init();
+            noPowerIcon.Init();
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-
-            Texture2D _texture;
-
-            _texture = new Texture2D(Game.GraphicsDevice, 1, 1);
-            _texture.SetData(new Color[] { Color.White });
-
-            spriteBatch.Draw(_texture, collision, Color.Blue);
-
             base.Draw(spriteBatch);
 
-           
+            if (!powered)
+            { noPowerIcon.Draw(spriteBatch); }
         }
 
     }
@@ -85,20 +90,29 @@ namespace City
         /// </summary>
         public Rectangle powerGererationRange;
 
+        
+
         public PowerSourceBuilding(GameHandler game, Rectangle collision, Rectangle powerGererationRange, Vector3 location, Vector3 rotation, double lifeTime) : base(game, collision, location, rotation, lifeTime)
         {
             this.powerGererationRange = powerGererationRange;
+            
         }
 
         public PowerSourceBuilding(GameHandler game, string Name, Rectangle collision, Rectangle powerGererationRange, Vector3 location, Vector3 rotation, double lifeTime) : base(game, Name, collision, location, rotation, lifeTime)
         {
             this.powerGererationRange = powerGererationRange;
+           
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
             PowerBuildings();
+        }
+
+        public override void Init()
+        {
+            base.Init();
         }
 
         protected virtual void PowerBuildings()

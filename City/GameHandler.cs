@@ -6,6 +6,9 @@ using Myra;
 using Myra.Graphics2D.UI;
 using NoiseTest;
 using System.Collections.Generic;
+using Box2DX.Common;
+using Box2DX.Collision;
+using Box2DX.Dynamics;
 
 
 
@@ -27,6 +30,12 @@ namespace City
 
         Actor mouseDisplayActor;
         Engine.Components.CameraComponent currentCamera;
+
+        public float physicsScaleX = 64;
+        public float physicsScaleY = 64;
+
+        public Box2DX.Dynamics.World physicsWorld;
+      
 
         //Camera
         Vector3 camTarget;
@@ -154,7 +163,38 @@ namespace City
             // TODO: Add your initialization logic here
 
             IsMouseVisible = true;
+            #region phys_test
 
+            //world bounds
+            // if bodies reach the end of the world, but it will be slower.
+            Box2DX.Collision.AABB worldAABB = new Box2DX.Collision.AABB();
+            worldAABB.LowerBound.Set(-100.0f, -100.0f);
+            worldAABB.UpperBound.Set(100.0f, 100.0f);
+
+            physicsWorld = new Box2DX.Dynamics.World(worldAABB, new Box2DX.Common.Vec2(0.0f, 9.8f), true);
+
+
+            // Define the ground body.
+            BodyDef groundBodyDef = new BodyDef();
+            groundBodyDef.Position.Set(0.0f / physicsScaleX, 64.0f / physicsScaleY);
+
+            // Call the body factory which creates the ground box shape.
+            // The body is also added to the world.
+            Body groundBody = physicsWorld.CreateBody(groundBodyDef);
+
+            // Define the ground box shape.
+            PolygonDef groundShapeDef = new PolygonDef();
+
+            // The extents are the half-widths of the box.
+            groundShapeDef.SetAsBox(1000.0f / physicsScaleX, 10.0f / physicsScaleY);
+
+            // Add the ground shape to the ground body.
+            groundBody.CreateShape(groundShapeDef);
+
+            
+
+
+            #endregion
 
             //FMOD.VERSION.dll
             base.Initialize();
@@ -257,11 +297,16 @@ namespace City
             GetActorByName("UNDERWATEReverb").Init();
 
             AddActor(new Player(this, "player", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f));
-            GetActorByName("player").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("player")));
+            // GetActorByName("player").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("player")));
             GetActorByName("player").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("player"), "Textures/solid"));
+
+            GetActorByName("player").Components.Add(new Engine.Components.Physics.PhysicsBodyComponent(this, new Vector2(0, 0), true, GetActorByName("player")));
+
+            GetActorByName("player").Components.Add(Engine.Components.Physics.ShapeComponent.CreateRectangeShape(this, GetActorByName("player"), false, 1.0f, 0.3f, 16.0f, 16.0f));
 
             GetActorByName("player").Init();
             currentCamera = (GetActorByName("player") as Player).playerCamera;
+
         }
 
         /// <summary>
@@ -306,8 +351,8 @@ namespace City
                 Id = "buildingType"
             };
 
-            combo.Items.Add(new ListItem("Dev.PowerSourceBuilding", Color.White));
-            combo.Items.Add(new ListItem("Dev.PowerConsumeBuilding", Color.White));
+            combo.Items.Add(new ListItem("Dev.PowerSourceBuilding", Microsoft.Xna.Framework.Color.White));
+            combo.Items.Add(new ListItem("Dev.PowerConsumeBuilding", Microsoft.Xna.Framework.Color.White));
             grid.Widgets.Add(combo);
 
 
@@ -333,6 +378,7 @@ namespace City
         protected override void Update(GameTime gameTime)
         {
 
+            physicsWorld.Step((float)gameTime.ElapsedGameTime.TotalSeconds, 5, 5);
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -365,16 +411,19 @@ namespace City
             {
                 camPosition.X -= 0.1f;
                 camTarget.X -= 0.1f;
+                //body.ApplyImpulse(new Vec2(-10.0f/physicsScaleX, 0.0f), body.GetLocalCenter());
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
                 camPosition.X += 0.1f;
                 camTarget.X += 0.1f;
+                //body.ApplyImpulse(new Vec2(10.0f / physicsScaleX, 0.0f), body.GetLocalCenter());
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
                 camPosition.Y -= 0.1f;
                 camTarget.Y -= 0.1f;
+                //body.ApplyImpulse(new Vec2(0.0f, -10.0f / physicsScaleY), body.GetLocalCenter());
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
             {
@@ -384,9 +433,13 @@ namespace City
             mouseDisplayActor.HandleInput(Keyboard.GetState().GetPressedKeys());
             mouseDisplayActor.Update(gameTime);
 
+            //GetActorByName("player").location = new Vector3(body.GetPosition().X * physicsScaleX, body.GetPosition().Y * physicsScaleY, 0);
+            //System.Diagnostics.Debug.WriteLine(new Vector3(body.GetPosition().X, body.GetPosition().Y, 0));
             GetActorByName("player").GetMatrix();
             soundPlayer.Set3DListenerAttributes((GetActorByName("player") as Player).playerId, GetActorByName("player").location, new Vector3(0, 0, 0), GetActorByName("player").GetMatrix().Forward, GetActorByName("player").GetMatrix().Up);
             soundPlayer.Update(gameTime);
+
+
         }
 
         /// <summary>
@@ -395,7 +448,7 @@ namespace City
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.White);
+            GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.White);
             // TODO: Add your drawing code here
 
             spriteBatch.Begin();
