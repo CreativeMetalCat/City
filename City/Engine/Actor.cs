@@ -43,6 +43,16 @@ namespace City.Engine
 
         #endregion
 
+        public virtual void OnBeginContact(Actor otherActor, Box2DX.Collision.Shape shape, Box2DX.Collision.Shape otherShape)
+        {
+
+        }
+
+        public virtual void OnEndContact(Actor otherActor, Box2DX.Collision.Shape shape, Box2DX.Collision.Shape otherShape)
+        {
+
+        }
+
         public Matrix GetMatrix()
         {
             return Matrix.CreateRotationX(MathHelper.ToRadians(rotation.X))

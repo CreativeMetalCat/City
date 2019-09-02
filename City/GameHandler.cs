@@ -35,7 +35,8 @@ namespace City
         public float physicsScaleY = 64;
 
         public Box2DX.Dynamics.World physicsWorld;
-      
+        public Engine.Physics.ContactListener contactListener;
+
 
         //Camera
         Vector3 camTarget;
@@ -163,20 +164,21 @@ namespace City
             // TODO: Add your initialization logic here
 
             IsMouseVisible = true;
-            #region phys_test
+            #region phys
 
             //world bounds
-            // if bodies reach the end of the world, but it will be slower.
+            // if bodies reach the end of the world, but it will be slower or stops completly.
             Box2DX.Collision.AABB worldAABB = new Box2DX.Collision.AABB();
             worldAABB.LowerBound.Set(-100.0f, -100.0f);
             worldAABB.UpperBound.Set(100.0f, 100.0f);
 
             physicsWorld = new Box2DX.Dynamics.World(worldAABB, new Box2DX.Common.Vec2(0.0f, 9.8f), true);
-
+            contactListener = new Engine.Physics.ContactListener();
+            physicsWorld.SetContactListener(contactListener);
 
             // Define the ground body.
             BodyDef groundBodyDef = new BodyDef();
-            groundBodyDef.Position.Set(0.0f / physicsScaleX, 64.0f / physicsScaleY);
+            groundBodyDef.Position.Set(0.0f / physicsScaleX, 256.0f / physicsScaleY);
 
             // Call the body factory which creates the ground box shape.
             // The body is also added to the world.
@@ -300,9 +302,7 @@ namespace City
             // GetActorByName("player").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("player")));
             GetActorByName("player").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("player"), "Textures/solid"));
 
-            GetActorByName("player").Components.Add(new Engine.Components.Physics.PhysicsBodyComponent(this, new Vector2(0, 0), true, GetActorByName("player")));
-
-            GetActorByName("player").Components.Add(Engine.Components.Physics.ShapeComponent.CreateRectangeShape(this, GetActorByName("player"), false, 1.0f, 0.3f, 16.0f, 16.0f));
+           
 
             GetActorByName("player").Init();
             currentCamera = (GetActorByName("player") as Player).playerCamera;

@@ -44,6 +44,28 @@ namespace City.Engine.Exceptions
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    public class PhysicsBodyDataIsBroken : Exception
+    {
+        public PhysicsBodyDataIsBroken()
+        {
+        }
+
+        public PhysicsBodyDataIsBroken(string message) : base(message)
+        {
+        }
+
+        public PhysicsBodyDataIsBroken(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        protected PhysicsBodyDataIsBroken(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+    }
+
     [Serializable]
     public class LoadFailException : Exception
     {

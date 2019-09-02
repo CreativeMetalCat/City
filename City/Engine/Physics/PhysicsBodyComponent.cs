@@ -21,6 +21,7 @@ namespace City.Engine.Components.Physics
             component.shapeDef.Density = density;
             component.shapeDef.Friction = friction;
             component.shapeDef.IsSensor = isSensor;
+            component.shapeDef.UserData = owner;
 
             (component.shapeDef as Box2DX.Collision.PolygonDef).SetAsBox(halfX / game.physicsScaleX, halfY / game.physicsScaleY);
 
@@ -72,7 +73,9 @@ namespace City.Engine.Components.Physics
             Box2DX.Dynamics.BodyDef bodyDef = new Box2DX.Dynamics.BodyDef();
             bodyDef.Position.Set(location.X / game.physicsScaleX, location.Y / game.physicsScaleY);
             bodyDef.FixedRotation = fixedRotation;
+            bodyDef.UserData = owner;
             body = game.physicsWorld.CreateBody(bodyDef);
+            body.SetUserData(owner);
         }
 
         /// <summary>
@@ -87,7 +90,9 @@ namespace City.Engine.Components.Physics
             Box2DX.Dynamics.BodyDef bodyDef = new Box2DX.Dynamics.BodyDef();
             bodyDef.Position.Set(location.X / game.physicsScaleX, location.Y / game.physicsScaleY);
             bodyDef.FixedRotation = fixedRotation;
+            bodyDef.UserData = owner;
             body = game.physicsWorld.CreateBody(bodyDef);
+            body.SetUserData(owner);
         }
 
         public override void Init()

@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Box2DX.Collision;
+using City.Engine;
+using Microsoft.Xna.Framework;
 using System.Linq;
 namespace City
 {
@@ -8,6 +10,12 @@ namespace City
         FMOD.Sound spawnFailSound;
         FMOD.Sound spawnPowerSource;
         FMOD.Sound spawnSuccess;
+
+        FMOD.Sound woodBoxImpact;
+
+        Engine.Components.Physics.PhysicsBodyComponent physicsBody;
+
+        Engine.Components.Physics.ShapeComponent shapeComponent;
 
         /// <summary>
         /// If game has more that one player
@@ -22,10 +30,22 @@ namespace City
 
         public Player(GameHandler game, Vector3 location, Vector3 rotation, double lifeTime) : base(game, location, rotation, lifeTime)
         {
+            physicsBody = new Engine.Components.Physics.PhysicsBodyComponent(game, new Vector2(0, 0), true, this);
+            shapeComponent = Engine.Components.Physics.ShapeComponent.CreateRectangeShape(game, this, false, 1.0f, 0.3f, 16.0f, 16.0f);
+
+            Components.Add(physicsBody);
+
+            Components.Add(shapeComponent);
         }
 
         public Player(GameHandler game, string Name, Vector3 location, Vector3 rotation, double lifeTime) : base(game, Name, location, rotation, lifeTime)
         {
+            physicsBody = new Engine.Components.Physics.PhysicsBodyComponent(game, new Vector2(0, 0), true, this);
+            shapeComponent = Engine.Components.Physics.ShapeComponent.CreateRectangeShape(game, this, false, 1.0f, 0.3f, 16.0f, 16.0f);
+
+            Components.Add(physicsBody);
+
+            Components.Add(shapeComponent);
         }
 
         public override void Init()
@@ -37,6 +57,8 @@ namespace City
             spawnPowerSource = Game.soundPlayer.LoadSound(Game.GetContentDirectory() + "/Sounds/ui/gameplay/wire-connect-pole.wav", FMOD.MODE._2D);
 
             spawnSuccess = Game.soundPlayer.LoadSound(Game.GetContentDirectory() + "/Sounds/ui/gameplay/build-large.wav", FMOD.MODE._3D_LINEARROLLOFF);
+
+            woodBoxImpact = Game.soundPlayer.LoadSound(Game.GetContentDirectory() + "/Sounds/physics/wood/wood_box_impact_soft3.wav", FMOD.MODE._3D_LINEARROLLOFF);
 
             playerCamera = new Engine.Components.CameraComponent(Game, this, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
 
@@ -231,7 +253,23 @@ namespace City
                     this.Destroy();
                 }
             }
+            
+        }
 
+        public override void OnBeginContact(Actor otherActor, Shape shape, Shape otherShape)
+        {
+            base.OnBeginContact(otherActor, shape, otherShape);
+
+            FMOD.VECTOR pos = new FMOD.VECTOR();
+            pos.x = location.X;
+            pos.y = location.Y;
+            pos.z = 0;
+
+            FMOD.VECTOR vel = new FMOD.VECTOR();
+
+            FMOD.VECTOR alt_pane_pos = new FMOD.VECTOR();
+           
+            Game.soundPlayer.PlaySound(woodBoxImpact, null).set3DAttributes(ref pos, ref vel, ref alt_pane_pos);
         }
 
         public override void Dispose()
