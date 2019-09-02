@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace City.Engine
 {
+    
     ///<summary>Base for everything on the scene/summary>
     public class Actor : Object
     {

@@ -34,8 +34,7 @@ namespace City
         public float physicsScaleX = 64;
         public float physicsScaleY = 64;
 
-        public Box2DX.Dynamics.World physicsWorld;
-        public Engine.Physics.ContactListener contactListener;
+        public Engine.Physics.PhysicsWorld physicsWorld;
 
 
         //Camera
@@ -172,9 +171,7 @@ namespace City
             worldAABB.LowerBound.Set(-100.0f, -100.0f);
             worldAABB.UpperBound.Set(100.0f, 100.0f);
 
-            physicsWorld = new Box2DX.Dynamics.World(worldAABB, new Box2DX.Common.Vec2(0.0f, 9.8f), true);
-            contactListener = new Engine.Physics.ContactListener();
-            physicsWorld.SetContactListener(contactListener);
+            physicsWorld = new Engine.Physics.PhysicsWorld(new Vector2(0, 9.8f).ToBox2DVector(), worldAABB);
 
             // Define the ground body.
             BodyDef groundBodyDef = new BodyDef();
@@ -378,7 +375,7 @@ namespace City
         protected override void Update(GameTime gameTime)
         {
 
-            physicsWorld.Step((float)gameTime.ElapsedGameTime.TotalSeconds, 5, 5);
+            physicsWorld.Step(gameTime, 5, 5);
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();

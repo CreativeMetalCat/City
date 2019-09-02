@@ -63,9 +63,11 @@
     <Compile Include="Engine\CameraComponent.cs" />
     <Compile Include="Engine\Component.cs" />
     <Compile Include="Engine\EngineExceptions.cs" />
+    <Compile Include="Engine\Extensions.cs" />
     <Compile Include="Engine\ImageDisplayComponent.cs" />
     <Compile Include="Engine\Physics\ContactListener.cs" />
     <Compile Include="Engine\Physics\PhysicsBodyComponent.cs" />
+    <Compile Include="Engine\Physics\World.cs" />
     <Compile Include="Engine\Sound\ReverbComponent.cs" />
     <Compile Include="Engine\Sound\SoundPlayer.cs" />
     <Compile Include="FMOD\fmod.cs" />
