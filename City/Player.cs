@@ -28,10 +28,18 @@ namespace City
 
         bool rightMouseButtonPressed;
 
+        bool upButtonPressed;
+
+        bool downButtonPressed;
+
+        bool rightButtonPressed;
+
+        bool leftButtonPressed;
+
         public Player(GameHandler game, Vector3 location, Vector3 rotation, double lifeTime) : base(game, location, rotation, lifeTime)
         {
             physicsBody = new Engine.Components.Physics.PhysicsBodyComponent(game, new Vector2(0, 0), true, this);
-            shapeComponent = Engine.Components.Physics.ShapeComponent.CreateRectangeShape(game, this, false, 1.0f, 0.3f, 16.0f, 16.0f);
+            shapeComponent = Engine.Components.Physics.ShapeComponent.CreateRectangeShape(game, this, false, 1.0f, 0.0f, 16.0f, 16.0f);
 
             Components.Add(physicsBody);
 
@@ -41,7 +49,7 @@ namespace City
         public Player(GameHandler game, string Name, Vector3 location, Vector3 rotation, double lifeTime) : base(game, Name, location, rotation, lifeTime)
         {
             physicsBody = new Engine.Components.Physics.PhysicsBodyComponent(game, new Vector2(0, 0), true, this);
-            shapeComponent = Engine.Components.Physics.ShapeComponent.CreateRectangeShape(game, this, false, 1.0f, 0.3f, 16.0f, 16.0f);
+            shapeComponent = Engine.Components.Physics.ShapeComponent.CreateRectangeShape(game, this, false, 1.0f, 0.0f, 16.0f, 16.0f);
 
             Components.Add(physicsBody);
 
@@ -77,6 +85,63 @@ namespace City
             {
                 comp.HandleInput(keys);
 
+            }
+
+            if (Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
+            {
+                if (!upButtonPressed)
+                {
+                    upButtonPressed = true;
+                    physicsBody.ApplyImpulseAtCenter(new Vector2(0, -100 / Game.physicsScaleY));
+                }
+            }
+            else if (Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyUp(Microsoft.Xna.Framework.Input.Keys.Up))
+            {
+                if (upButtonPressed)
+                {
+                    upButtonPressed = false;
+                }
+            }
+
+
+            if (Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
+            {
+                downButtonPressed = true;
+            }
+            else if (Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyUp(Microsoft.Xna.Framework.Input.Keys.Down))
+            {
+                downButtonPressed = false;
+            }
+
+            if (Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
+            {
+                leftButtonPressed = true;
+                float velChange = (-5 ) - physicsBody.GetVelocity().X;
+
+                physicsBody.ApplyImpulseAtCenter(new Vector2(velChange * physicsBody.GetMass(), 0));
+            }
+            else if (Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyUp(Microsoft.Xna.Framework.Input.Keys.Left))
+            {
+                leftButtonPressed = false;
+            }
+
+            if (Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
+            {
+                rightButtonPressed = true;
+                float velChange = (5) - physicsBody.GetVelocity().X;
+
+                physicsBody.ApplyImpulseAtCenter(new Vector2(velChange * physicsBody.GetMass(), 0));
+            }
+            else if (Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyUp(Microsoft.Xna.Framework.Input.Keys.Right))
+            {
+                rightButtonPressed = false;
+            }
+
+            if(!rightButtonPressed&&!leftButtonPressed)
+            {
+                float velChange = (0) - physicsBody.GetVelocity().X;
+
+                physicsBody.ApplyImpulseAtCenter(new Vector2(velChange * physicsBody.GetMass(), 0));
             }
 
             if (!Game._desktop.IsMouseOverGUI)
@@ -125,6 +190,8 @@ namespace City
                             {//new Vector3(Microsoft.Xna.Framework.Input.Mouse.GetState().X, Microsoft.Xna.Framework.Input.Mouse.GetState().Y, 0)
                                 Game.AddActor(new PowerConsumingBuilding(Game, "consumer", new Rectangle((int)gridPos.X, (int)gridPos.Y, 32, 32), new Rectangle((int)gridPos.X - 32, (int)gridPos.Y - 32, 64, 64), new Vector3(gridPos.X, gridPos.Y, 0), new Vector3(0, 0, 0), 6.0f));
                                 Game.actors[Game.actors.Count - 1].Components.Add(new Engine.Components.ImageDisplayComponent(Game, Game.actors[Game.actors.Count - 1], "Textures/grassy_bricks"));
+                                Game.actors[Game.actors.Count - 1].Components.Add(new Engine.Components.Physics.PhysicsBodyComponent(Game, new Vector2(gridPos.X, gridPos.Y), true, Game.actors[Game.actors.Count - 1]));
+                                Game.actors[Game.actors.Count - 1].Components.Add(Engine.Components.Physics.ShapeComponent.CreateRectangeShape(Game, Game.actors[Game.actors.Count - 1], false, 1.0f, 0.0f, 16.0f, 16.0f));
                                 Game.actors[Game.actors.Count - 1].Init();
 
                                 FMOD.VECTOR pos = new FMOD.VECTOR();
@@ -224,7 +291,7 @@ namespace City
 
                         foreach (Building building in Game.actors.OfType<Building>())
                         {
-                            if(building.collision.Contains((int)(Microsoft.Xna.Framework.Input.Mouse.GetState().Position.X / Game.gridSize.X) * Game.gridSize.X, (int)(Microsoft.Xna.Framework.Input.Mouse.GetState().Position.Y / Game.gridSize.Y) * Game.gridSize.Y))
+                            if (building.collision.Contains((int)(Microsoft.Xna.Framework.Input.Mouse.GetState().Position.X / Game.gridSize.X) * Game.gridSize.X, (int)(Microsoft.Xna.Framework.Input.Mouse.GetState().Position.Y / Game.gridSize.Y) * Game.gridSize.Y))
                             {
                                 building.Dispose();
                                 Game.actors.Remove(building);
@@ -237,7 +304,10 @@ namespace City
                 {
                     rightMouseButtonPressed = false;
                 }
+
+
             }
+
         }
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
         {
@@ -253,8 +323,11 @@ namespace City
                     this.Destroy();
                 }
             }
-            
+
+
         }
+
+
 
         public override void OnBeginContact(Actor otherActor, Shape shape, Shape otherShape)
         {
@@ -268,7 +341,7 @@ namespace City
             FMOD.VECTOR vel = new FMOD.VECTOR();
 
             FMOD.VECTOR alt_pane_pos = new FMOD.VECTOR();
-           
+
             Game.soundPlayer.PlaySound(woodBoxImpact, null).set3DAttributes(ref pos, ref vel, ref alt_pane_pos);
         }
 

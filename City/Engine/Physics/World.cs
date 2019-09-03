@@ -40,6 +40,15 @@ namespace City.Engine.Physics
             return world.CreateBody(bodyDef);
         }
 
+        /// <summary>
+        /// Disposes of body
+        /// </summary>
+        /// <param name="body"></param>
+        public virtual void RemoveBody(Body body)
+        {
+            world.DestroyBody(body);
+        }
+
         public Box2DX.Dynamics.World World { get => world; }
         public AABB WorldBoundaries { get => worldBoundaries; }
     }

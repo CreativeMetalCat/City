@@ -39,6 +39,10 @@ namespace City.Engine.Components.Physics
         {
         }
 
+        public override void Dispose()
+        {
+            
+        }
 
     }
 
@@ -114,12 +118,37 @@ namespace City.Engine.Components.Physics
             body.SetMassFromShapes();
         }
 
+        public void ApplyImpulseAtCenter(Vector2 impulse)
+        {
+            body.ApplyImpulse(impulse.ToBox2DVector(), body.GetWorldCenter());
+        }
+
+        public void ApplyImpulse(Vector2 impulse, Vector2 point)
+        {
+            body.ApplyImpulse(impulse.ToBox2DVector(), point.ToBox2DVector());
+        }
+
+        public Vector2 GetVelocity()
+        {
+            return body.GetLinearVelocity().ToVector();
+        }
+
+        public float GetMass()
+        {
+            return body.GetMass();
+        }
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
 
             location = new Vector2(body.GetPosition().X, body.GetPosition().Y);
             owner.location = GetWorldLocation();
+        }
+
+        public override void Dispose()
+        {
+            Game.physicsWorld.RemoveBody(body);
         }
     }
 }
