@@ -200,5 +200,69 @@ namespace City.Engine.Components
 
     }
 
+    /// <summary>
+    /// Handles loading of the script
+    /// 
+    /// </summary>
+    public class ScriptComponent : Component
+    {
+        string fileName;
+        System.Reflection.Assembly assembly;
+        /// <summary>
+        /// Main class in the script(the one that must contain functions that will be called)
+        /// </summary>
+        System.Type program;
+
+
+        public ScriptComponent(GameHandler game, string fileName, Actor owner) : base(game, owner)
+        {
+            this.fileName = fileName;
+        }
+
+        public ScriptComponent(GameHandler game, string Name, string fileName, Actor owner) : base(game, Name, owner)
+        {
+            this.fileName = fileName;
+        }
+
+        public override void Init()
+        {
+            base.Init();
+            Microsoft.CSharp.CSharpCodeProvider provider = new Microsoft.CSharp.CSharpCodeProvider();
+            System.CodeDom.Compiler.CompilerParameters parameters = new System.CodeDom.Compiler.CompilerParameters();
+
+            // Reference to System.Drawing library
+            parameters.ReferencedAssemblies.Add("System.dll");
+            // True - memory generation, false - external file generation
+            parameters.GenerateInMemory = true;
+            // True - exe file generation, false - dll file generation
+            parameters.GenerateExecutable = true;
+
+            string code = System.IO.File.ReadAllText(fileName);
+
+            System.CodeDom.Compiler.CompilerResults results = provider.CompileAssemblyFromSource(parameters, code);
+
+            if (results.Errors.HasErrors)
+            {
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+                foreach (System.CodeDom.Compiler.CompilerError error in results.Errors)
+                {
+                    sb.AppendLine(string.Format("Error ({0}): {1}", error.ErrorNumber, error.ErrorText));
+                }
+
+                throw new System.InvalidOperationException(sb.ToString());
+            }
+            assembly = results.CompiledAssembly;
+            program = assembly.GetType("Sript");
+
+
+        }
+
+        public virtual System.Reflection.MethodInfo GetMethod(string name)
+        {
+            return program.GetMethod(name);
+        }
+    }
+
 
 }
