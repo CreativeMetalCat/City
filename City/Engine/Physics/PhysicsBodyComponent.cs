@@ -50,6 +50,7 @@ namespace City.Engine.Components.Physics
     {
         public Box2DX.Dynamics.Body body;
 
+        public List<Actor> overlappingActors = new List<Actor>();
         /// <summary>
         /// THIS VALUE IS NOT RELATIVE TO PARENT AND SCALED DOWN. USE GETWORLDLCOATION INSTEAD.
         /// Location of the body in world
@@ -144,6 +145,28 @@ namespace City.Engine.Components.Physics
 
             location = new Vector2(body.GetPosition().X, body.GetPosition().Y);
             owner.location = GetWorldLocation();
+        }
+
+        public virtual void OnBeginContact(Actor otherActor, Box2DX.Collision.Shape shape, Box2DX.Collision.Shape otherShape)
+        {
+            
+            bool canAdd = true;
+            foreach(var actor in overlappingActors)
+            {
+                if (actor == otherActor) { canAdd = false;break; }
+            }
+            if(canAdd)
+            {
+                overlappingActors.Add(otherActor);
+            }
+            owner.OnBeginContact(otherActor, shape, otherShape);
+        }
+
+        public virtual void OnEndContact(Actor otherActor, Box2DX.Collision.Shape shape, Box2DX.Collision.Shape otherShape)
+        {
+            
+            overlappingActors.Remove(otherActor);
+            owner.OnEndContact(otherActor, shape, otherShape);
         }
 
         public override void Dispose()

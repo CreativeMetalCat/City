@@ -1,4 +1,5 @@
 ﻿using Box2DX.Dynamics;
+using System.Linq;
 
 namespace City.Engine.Physics
 {
@@ -11,9 +12,9 @@ namespace City.Engine.Physics
 
             if (point.Shape1.UserData != point.Shape2.UserData)
             {
-                if ((point.Shape1.UserData is Actor)) { (point.Shape1.UserData as Actor).OnBeginContact((point.Shape2.UserData as Actor), point.Shape1, point.Shape2); }
+                if ((point.Shape1.UserData is Actor)) { (point.Shape1.UserData as Actor).Components.OfType<Components.Physics.PhysicsBodyComponent>().Single< Components.Physics.PhysicsBodyComponent>().OnBeginContact((point.Shape2.UserData as Actor), point.Shape1, point.Shape2); }
                 else { System.Diagnostics.Debug.WriteLine("Contact listener warning: This contact listener requires for user data to be owner of the component to properly operate. In ContactListener.Add"); }
-                if ((point.Shape2.UserData is Actor)) { (point.Shape2.UserData as Actor).OnBeginContact((point.Shape1.UserData as Actor), point.Shape2, point.Shape1); }
+                if ((point.Shape2.UserData is Actor)) { (point.Shape2.UserData as Actor).Components.OfType<Components.Physics.PhysicsBodyComponent>().Single<Components.Physics.PhysicsBodyComponent>().OnBeginContact((point.Shape1.UserData as Actor), point.Shape2, point.Shape1); }
                 else { System.Diagnostics.Debug.WriteLine("Contact listener warning: This contact listener requires for user data to be owner of the component to properly operate. In ContactListener.Add"); }
             }
             else
@@ -28,9 +29,9 @@ namespace City.Engine.Physics
 
             if (point.Shape1.UserData != point.Shape2.UserData)
             {
-                if ((point.Shape1.UserData is Actor)) { (point.Shape1.UserData as Actor).OnEndContact((point.Shape2.UserData as Actor), point.Shape1, point.Shape2); }
+                if ((point.Shape1.UserData is Actor)) { (point.Shape1.UserData as Actor).Components.OfType<Components.Physics.PhysicsBodyComponent>().Single<Components.Physics.PhysicsBodyComponent>().OnEndContact((point.Shape2.UserData as Actor), point.Shape1, point.Shape2); }
                 else { System.Diagnostics.Debug.WriteLine("Contact listener warning: This contact listener requires for user data to be owner of the component to properly operate. In ContactListener.Add"); }
-                if ((point.Shape2.UserData is Actor)) { (point.Shape2.UserData as Actor).OnEndContact((point.Shape1.UserData as Actor), point.Shape2, point.Shape1); }
+                if ((point.Shape2.UserData is Actor)) { (point.Shape2.UserData as Actor).Components.OfType<Components.Physics.PhysicsBodyComponent>().Single<Components.Physics.PhysicsBodyComponent>().OnEndContact((point.Shape1.UserData as Actor), point.Shape2, point.Shape1); }
                 else { System.Diagnostics.Debug.WriteLine("Contact listener warning: This contact listener requires for user data to be owner of the component to properly operate. In ContactListener.Add"); }
             }
             else

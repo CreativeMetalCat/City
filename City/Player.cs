@@ -28,7 +28,6 @@ namespace City
 
         public Engine.Components.CameraComponent playerCamera;
 
-        public Engine.Components.ScriptComponent scriptComponent;
 
         bool leftMouseButtonPressed;
 
@@ -47,13 +46,10 @@ namespace City
             physicsBody = new Engine.Components.Physics.PhysicsBodyComponent(game, new Vector2(0, 0), true, this);
             shapeComponent = Engine.Components.Physics.ShapeComponent.CreateRectangeShape(game, this, false, 1.0f, 0.0f, 16.0f, 16.0f);
 
-            scriptComponent = new Engine.Components.ScriptComponent(game, Game.GetContentDirectory() + "/Scripts/playertest.cs",this);
-
             Components.Add(physicsBody);
 
             Components.Add(shapeComponent);
 
-            components.Add(scriptComponent);
         }
 
         public Player(GameHandler game, string Name, Vector3 location, Vector3 rotation, double lifeTime) : base(game, Name, location, rotation, lifeTime)
@@ -61,13 +57,11 @@ namespace City
             physicsBody = new Engine.Components.Physics.PhysicsBodyComponent(game, new Vector2(0, 0), true, this);
             shapeComponent = Engine.Components.Physics.ShapeComponent.CreateRectangeShape(game, this, false, 1.0f, 0.0f, 16.0f, 16.0f);
 
-            scriptComponent = new Engine.Components.ScriptComponent(game, Game.GetContentDirectory() + "/Scripts/playertest.cs", this);
 
             Components.Add(physicsBody);
 
             Components.Add(shapeComponent);
 
-            components.Add(scriptComponent);
         }
 
         public override void Init()
@@ -358,7 +352,7 @@ namespace City
 
             Game.soundPlayer.PlaySound(woodBoxImpact, null).set3DAttributes(ref pos, ref vel, ref alt_pane_pos);
 
-            scriptComponent.GetMethod("Main").Invoke(null, null);
+           
         }
 
         public override void Dispose()
