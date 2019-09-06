@@ -20,6 +20,10 @@ namespace City
     /// </summary>
     public class GameHandler : Game
     {
+
+        bool showDebugUI = false;
+        bool showLandscapeGeneratorUI = false;
+
         public readonly GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D placeholder;
@@ -209,79 +213,16 @@ namespace City
             soundPlayer.Init();
 
 
+            //generate and init landscape
+            foreach (var actor in GenerateLandscape(50, 50, 1, 1)) { AddActor(actor); actor.Init(); }
+
             mouseDisplayActor = new Engine.Actor(this, "mousedisplay", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f);
 
             mouseDisplayActor.Components.Add(new Engine.Components.ImageDisplayComponent(this, mouseDisplayActor, "Textures/mouse/icons8-cursor-24"));
             mouseDisplayActor.Components.Add(new Engine.Components.MouseFollowComponent(this, mouseDisplayActor));
             mouseDisplayActor.Init();
 
-            OpenSimplexNoise oSimplexNoise = new OpenSimplexNoise();
-            for (int x = 0; x < 50; x++)
-            {
-                for (int y = 0; y < 50; y++)
-                {
-                    double fNoise = oSimplexNoise.Evaluate(x / 2, y / 2);
-
-                    if (fNoise < -0.1)
-                    {
-                        int copyId = AddActor(new GroundBaseActor(this, "water", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
-                        if (copyId != 0)
-                        {
-                            GetActorByName("water" + copyId).Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("water" + copyId), "Textures/nature/water1"));
-                            GetActorByName("water" + copyId).Init();
-                        }
-                        else
-                        {
-                            GetActorByName("water").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("water"), "Textures/nature/water1"));
-                            GetActorByName("water").Init();
-                        }
-
-                    }
-                    else if (fNoise >= 0 && fNoise < 0.5)
-                    {
-                        int copyId = AddActor(new GroundBaseActor(this, "grass", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
-                        if (copyId != 0)
-                        {
-                            GetActorByName("grass" + copyId).Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("grass" + copyId), "Textures/nature/grass1"));
-                            GetActorByName("grass" + copyId).Init();
-                        }
-                        else
-                        {
-                            GetActorByName("grass").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("grass"), "Textures/nature/grass1"));
-                            GetActorByName("grass").Init();
-                        }
-
-                    }
-                    else if (fNoise >= 0.5)
-                    {
-                        int copyId = AddActor(new GroundBaseActor(this, "snow", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
-                        if (copyId != 0)
-                        {
-                            GetActorByName("snow" + copyId).Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("snow" + copyId), "Textures/nature/snow1"));
-                            GetActorByName("snow" + copyId).Init();
-                        }
-                        else
-                        {
-                            GetActorByName("snow").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("snow"), "Textures/nature/snow1"));
-                            GetActorByName("snow").Init();
-                        }
-                    }
-                    else if (fNoise >= -0.1 && fNoise < 0)
-                    {
-                        int copyId = AddActor(new GroundBaseActor(this, "sand", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
-                        if (copyId != 0)
-                        {
-                            GetActorByName("sand" + copyId).Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("sand" + copyId), "Textures/nature/sand1"));
-                            GetActorByName("sand" + copyId).Init();
-                        }
-                        else
-                        {
-                            GetActorByName("sand").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("sand"), "Textures/nature/sand1"));
-                            GetActorByName("sand").Init();
-                        }
-                    }
-                }
-            }
+           
 
             AddActor(new Actor(this, "ConcertHallReverb", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f));
             GetActorByName("ConcertHallReverb").Components.Add(new Engine.Components.ReverbComponent(this, GetActorByName("ConcertHallReverb"), new Vector3(0, 0, 0), FMOD.PRESET.CONCERTHALL(), 32, 32));
@@ -306,6 +247,146 @@ namespace City
 
         }
 
+        protected void LoadMap(string mapName)
+        {
+
+            int sizeX = 0;
+            int sizeY = 0;
+            int resX = 0;
+            int resY = 0;
+            for(int i =0; i< (_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).ChildrenCount; i++)
+            {
+                if((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i).Id == "xSize")
+                {
+                    if ((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i) is SpinButton)
+                    {
+                        if (((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i) as SpinButton).Value != null)
+                        {
+                            sizeX = (int)((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i) as SpinButton).Value.GetValueOrDefault();
+                        }
+                    }
+                }
+                else if ((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i).Id == "ySize")
+                {
+                    if ((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i) is SpinButton)
+                    {
+                        if (((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i) as SpinButton).Value != null)
+                        {
+                            sizeY = (int)((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i) as SpinButton).Value.GetValueOrDefault();
+                        }
+                    }
+                }
+                else if ((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i).Id == "xResolution")
+                {
+                    if ((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i) is SpinButton)
+                    {
+                        if (((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i) as SpinButton).Value != null)
+                        {
+                            resX = (int)((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i) as SpinButton).Value.GetValueOrDefault();
+                        }
+                    }
+                }
+                else if ((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i).Id == "yResolution")
+                {
+                    if ((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i) is SpinButton)
+                    {
+                        if (((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i) as SpinButton).Value != null)
+                        {
+                            resY = (int)((_desktop.GetChild(0) as Myra.Graphics2D.UI.Grid).GetChild(i) as SpinButton).Value.GetValueOrDefault();
+                        }
+                    }
+                }
+
+            }
+
+            //generate and init landscape
+            foreach (var actor in GenerateLandscape(sizeX, sizeY,resX, resY)) { AddActor(actor); actor.Init(); }
+
+            mouseDisplayActor = new Engine.Actor(this, "mousedisplay", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f);
+
+            mouseDisplayActor.Components.Add(new Engine.Components.ImageDisplayComponent(this, mouseDisplayActor, "Textures/mouse/icons8-cursor-24"));
+            mouseDisplayActor.Components.Add(new Engine.Components.MouseFollowComponent(this, mouseDisplayActor));
+            mouseDisplayActor.Init();
+
+
+
+            AddActor(new Actor(this, "ConcertHallReverb", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f));
+            GetActorByName("ConcertHallReverb").Components.Add(new Engine.Components.ReverbComponent(this, GetActorByName("ConcertHallReverb"), new Vector3(0, 0, 0), FMOD.PRESET.CONCERTHALL(), 32, 32));
+            GetActorByName("ConcertHallReverb").Init();
+
+            AddActor(new Actor(this, "QUARRYReverb", new Vector3(128, 0, 0), new Vector3(0, 0, 0), 0.0f));
+            GetActorByName("QUARRYReverb").Components.Add(new Engine.Components.ReverbComponent(this, GetActorByName("QUARRYReverb"), new Vector3(0, 0, 0), FMOD.PRESET.QUARRY(), 32, 32));
+            GetActorByName("QUARRYReverb").Init();
+
+            AddActor(new Actor(this, "UNDERWATEReverb", new Vector3(0, 128, 0), new Vector3(0, 0, 0), 0.0f));
+            GetActorByName("UNDERWATEReverb").Components.Add(new Engine.Components.ReverbComponent(this, GetActorByName("UNDERWATEReverb"), new Vector3(0, 0, 0), FMOD.PRESET.UNDERWATER(), 32, 32));
+            GetActorByName("UNDERWATEReverb").Init();
+
+            AddActor(new Player(this, "player", new Vector3(0, 0, 0), new Vector3(0, 0, 0), 0.0f));
+            // GetActorByName("player").Components.Add(new Engine.Components.BasicMovementComponent(this, GetActorByName("player")));
+            GetActorByName("player").Components.Add(new Engine.Components.ImageDisplayComponent(this, GetActorByName("player"), "Textures/solid"));
+
+
+
+            GetActorByName("player").Init();
+            currentCamera = (GetActorByName("player") as Player).playerCamera;
+        }
+
+        /// <summary>
+        /// Generates array of uninitiased ground actors using perlin noise
+        /// </summary>
+        /// <param name="xResolution"></param>
+        /// <param name="yResolution"></param>
+        protected virtual List<Actor> GenerateLandscape(int sizeX,int sizeY,double xResolution,double yResolution)
+        {
+            List<Actor> result = new List<Actor>();
+             OpenSimplexNoise oSimplexNoise = new OpenSimplexNoise();
+            for (int x = 0; x < sizeX; x++)
+            {
+                for (int y = 0; y < sizeY; y++)
+                {
+                    double fNoise = oSimplexNoise.Evaluate(x / xResolution, y / yResolution);
+
+                    if (fNoise < -0.1)
+                    {
+                        result.Add(new GroundBaseActor(this, "water", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
+                        result[result.Count - 1].Components.Add(new Engine.Components.ImageDisplayComponent(this, result[result.Count - 1], "Textures/nature/water1"));
+
+                    }
+                    else if (fNoise >= 0 && fNoise < 0.5)
+                    {
+                        result.Add(new GroundBaseActor(this, "grass", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
+                        result[result.Count - 1].Components.Add(new Engine.Components.ImageDisplayComponent(this, result[result.Count - 1], "Textures/nature/grass1"));
+                    }
+                    else if (fNoise >= 0.5)
+                    {
+                        result.Add(new GroundBaseActor(this, "snow", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
+                        result[result.Count - 1].Components.Add(new Engine.Components.ImageDisplayComponent(this, result[result.Count - 1], "Textures/nature/snow1"));
+                    }
+                    else if (fNoise >= -0.1 && fNoise < 0)
+                    {
+                        result.Add(new GroundBaseActor(this, "sand", true, new Vector3(x * 32, y * 32, 0), new Vector3(0, 0, 0), 0.0f));
+                        result[result.Count - 1].Components.Add(new Engine.Components.ImageDisplayComponent(this, result[result.Count - 1], "Textures/nature/sand1"));
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        protected void UnLoadMap()
+        {
+            foreach (var actor in actors)
+            {
+                try
+                {
+                    actor.Dispose();
+                }
+                catch (System.NotImplementedException e) { }
+            }
+            actors.Clear();
+        }
+
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -323,8 +404,8 @@ namespace City
 
             var grid = new Grid
             {
-                RowSpacing = 8,
-                ColumnSpacing = 8
+                RowSpacing = 16,
+                ColumnSpacing = 16
             };
 
             grid.ColumnsProportions.Add(new Grid.Proportion(Grid.ProportionType.Auto));
@@ -352,6 +433,99 @@ namespace City
             combo.Items.Add(new ListItem("Dev.PowerConsumeBuilding", Microsoft.Xna.Framework.Color.White));
             grid.Widgets.Add(combo);
 
+            var xSizeText = new TextBlock
+            {
+                Top = 25,
+                Text = "XSize",
+                
+            };
+            grid.Widgets.Add(xSizeText);
+            var ySizeText = new TextBlock
+            {
+                Top = 50,
+                Text = "YSize",
+                
+            };
+            grid.Widgets.Add(ySizeText);
+            var xResolutionText = new TextBlock
+            {
+                Top = 75,
+                Text = "xResolution",
+                Id = "xResolution",
+            };
+            grid.Widgets.Add(xResolutionText);
+
+            var yResolutionText = new TextBlock
+            {
+                Top = 100,
+                Text = "yResolution",
+               
+            }; grid.Widgets.Add(yResolutionText);
+
+
+            var xSizeSpinButton = new SpinButton
+            {
+                Left = 100,
+                Id = "xSize",
+                PaddingTop = 25,
+                Width = 100,
+                Minimum = 0,
+                Nullable = false,
+            };
+
+            grid.Widgets.Add(xSizeSpinButton);
+
+            var ySizeSpinButton = new SpinButton
+            {
+                Id = "ySize",
+                Left = 100,
+                Top = 50,
+                Width = 100,
+                Minimum = 0,
+                Nullable = false,
+            };
+
+            grid.Widgets.Add(ySizeSpinButton);
+
+            var xResolutionSpinButton = new SpinButton
+            {
+                Left = 100,
+                Id = "xResolution",
+                Top = 75,
+                Width = 100,
+                Minimum = 0,
+                Nullable = false,
+            };
+
+            grid.Widgets.Add(xResolutionSpinButton);
+
+            var yResolutionSpinButton = new SpinButton
+            {
+                Left = 100,
+                Top = 100,
+                Minimum = 0,
+                Width = 100,
+                Id = "yResolution",
+                Nullable = false,
+
+            };
+         
+            grid.Widgets.Add(yResolutionSpinButton);
+
+            var applyButton = new TextBlock
+            {
+                Top=125,
+                Text="Regenerate"
+            };
+
+            applyButton.MouseDown += (s, a) =>
+            {
+                UnLoadMap();
+
+                LoadMap("testGererate");
+                
+            };
+            grid.Widgets.Add(applyButton);
 
             // Add it to the desktop
             _desktop = new Desktop();
