@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace City.Engine.Components
 {
-    class CameraComponent : Component
+    public class CameraComponent : Component
     {
 
         public Vector3 camTarget;

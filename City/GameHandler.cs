@@ -21,6 +21,7 @@ namespace City
     public class GameHandler : Game
     {
 
+        bool tildePressed = false;
         bool showDebugUI = false;
         bool showLandscapeGeneratorUI = false;
 
@@ -32,14 +33,15 @@ namespace City
 
         public Myra.Graphics2D.UI.Desktop _desktop;
 
-        Actor mouseDisplayActor;
-        Engine.Components.CameraComponent currentCamera;
+       public Actor mouseDisplayActor;
+        public Engine.Components.CameraComponent currentCamera;
 
         public float physicsScaleX = 64;
         public float physicsScaleY = 64;
 
         public Engine.Physics.PhysicsWorld physicsWorld;
 
+        Engine.Debug.DebugConsole console;
 
         //Camera
         Vector3 camTarget;
@@ -154,6 +156,8 @@ namespace City
 
             gridSize.X = 32;
             gridSize.Y = 32;
+
+          
         }
 
         /// <summary>
@@ -337,7 +341,7 @@ namespace City
         /// </summary>
         /// <param name="xResolution"></param>
         /// <param name="yResolution"></param>
-        protected virtual List<Actor> GenerateLandscape(int sizeX,int sizeY,double xResolution,double yResolution)
+        protected internal virtual List<Actor> GenerateLandscape(int sizeX,int sizeY,double xResolution,double yResolution)
         {
             List<Actor> result = new List<Actor>();
              OpenSimplexNoise oSimplexNoise = new OpenSimplexNoise();
@@ -374,7 +378,7 @@ namespace City
             return result;
         }
 
-        protected void UnLoadMap()
+        protected internal void UnLoadMap()
         {
             foreach (var actor in actors)
             {
@@ -401,6 +405,9 @@ namespace City
             placeholder = this.Content.Load<Texture2D>("Textures/picture");
 
             MyraEnvironment.Game = this;
+
+            console = new Engine.Debug.DebugConsole(this,true);
+            console.AddMessage("Activated Debug Console");
 
             var grid = new Grid
             {
@@ -530,6 +537,7 @@ namespace City
             // Add it to the desktop
             _desktop = new Desktop();
             _desktop.Widgets.Add(grid);
+            console.Draw(_desktop);
         }
 
         /// <summary>
@@ -548,7 +556,7 @@ namespace City
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-
+            
             physicsWorld.Step(gameTime, 5, 5);
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -601,16 +609,35 @@ namespace City
                 camPosition.Y += 0.1f;
                 camTarget.Y += 0.1f;
             }
+            if(Keyboard.GetState().IsKeyDown(Keys.OemTilde))
+            {
+                if (!tildePressed)
+                {
+                    console.ToggleVisibility();
+                    //console.Draw(_desktop);
+                    tildePressed = true;
+                }
+            }
+
+            if (Keyboard.GetState().IsKeyUp(Keys.OemTilde))
+            {
+                tildePressed = false;
+            }
+
             mouseDisplayActor.HandleInput(Keyboard.GetState().GetPressedKeys());
             mouseDisplayActor.Update(gameTime);
 
             //GetActorByName("player").location = new Vector3(body.GetPosition().X * physicsScaleX, body.GetPosition().Y * physicsScaleY, 0);
             //System.Diagnostics.Debug.WriteLine(new Vector3(body.GetPosition().X, body.GetPosition().Y, 0));
-            GetActorByName("player").GetMatrix();
-            soundPlayer.Set3DListenerAttributes((GetActorByName("player") as Player).playerId, GetActorByName("player").location, new Vector3(0, 0, 0), GetActorByName("player").GetMatrix().Forward, GetActorByName("player").GetMatrix().Up);
-            soundPlayer.Update(gameTime);
+            if(GetActorByName("player")!=null)
+            {
+                GetActorByName("player").GetMatrix();
+                soundPlayer.Set3DListenerAttributes((GetActorByName("player") as Player).playerId, GetActorByName("player").location, new Vector3(0, 0, 0), GetActorByName("player").GetMatrix().Forward, GetActorByName("player").GetMatrix().Up);
+                soundPlayer.Update(gameTime);
 
-
+            }
+            console.Update();
+            
         }
 
         /// <summary>
@@ -640,6 +667,7 @@ namespace City
             _desktop.Bounds = new Rectangle(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth,
                                                     GraphicsDevice.PresentationParameters.BackBufferHeight);
             _desktop.Render();
+            
             base.Draw(gameTime);
         }
 
